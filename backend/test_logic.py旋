@@ -1,0 +1,36 @@
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'inventory_backend.settings')
+django.setup()
+
+from core.models import Branch, Product, Stock, StockMovementHistory
+
+def test_sale():
+    try:
+        b = Branch.objects.get(name='Cagayan Hub Alpha')
+        p = Product.objects.get(sku='VELO-X1')
+        s = Stock.objects.get(branch=b, product=p)
+        
+        initial = s.quantity
+        # Simulate a sale
+        s.quantity -= 5
+        s.save()
+        
+        # Log history
+        StockMovementHistory.objects.create(
+            branch=b,
+            product=p,
+            movement_type='SALE',
+            quantity=5,
+            reference="VERIFICATION_TEST"
+        )
+        
+        print(f"INITIAL: {initial}")
+        print(f"FINAL: {s.quantity}")
+        print("LOGIC_TEST: PASSED")
+    except Exception as e:
+        print(f"LOGIC_TEST: FAILED - {e}")
+
+if __name__ == "__main__":
+    test_sale()

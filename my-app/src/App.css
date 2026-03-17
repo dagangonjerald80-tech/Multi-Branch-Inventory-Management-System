@@ -1,0 +1,281 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.nav {
+  width: 200px;
+  background: #1e293b;
+  color: #fff;
+  padding: 1rem 0;
+}
+
+.nav-title {
+  font-size: 1.25rem;
+  padding: 0 1rem;
+  margin: 0 0 1rem 0;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-list a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: #94a3b8;
+  text-decoration: none;
+}
+
+.nav-list a:hover,
+.nav-list a.active {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+}
+
+.main {
+  flex: 1;
+  padding: 2rem;
+  background: #f8fafc;
+}
+
+.page h1 {
+  margin: 0 0 1.5rem 0;
+  color: #0f172a;
+}
+
+.loading, .error {
+  padding: 1rem;
+}
+
+.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: #fff;
+  padding: 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.stat-card.alert {
+  border-left: 4px solid #dc2626;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table th {
+  background: #f1f5f9;
+  font-weight: 600;
+  color: #475569;
+}
+
+.table tr.low {
+  background: #fef2f2;
+}
+
+.table tr.low td {
+  color: #b91c1c;
+}
+
+.form label {
+  display: block;
+  margin-top: 0.75rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.form input,
+.form select,
+.form textarea {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.25rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+}
+
+.form textarea {
+  min-height: 80px;
+}
+
+.form div {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.btn.primary {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+
+.btn.danger {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.btn.danger:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn.small {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  margin-right: 0.25rem;
+}
+
+.filters {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filters select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+}
+
+.stock-bars .bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.bar-row span:first-child {
+  min-width: 120px;
+}
+
+.bar-wrap {
+  flex: 1;
+  height: 20px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: #3b82f6;
+  transition: width 0.3s;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.sales-trend {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.trend-item {
+  padding: 0.5rem 0.75rem;
+  background: #f1f5f9;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.trend-item span:first-child {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.status {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status.completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status.cancelled {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.status.in, .status.transfer {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status.out, .status.sale {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.low-qty {
+  font-weight: 700;
+  color: #dc2626;
+}

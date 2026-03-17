@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.db import transaction, models
 from .models import Branch, Product, Stock, StockTransfer, StockMovementHistory, Supplier
@@ -9,6 +10,61 @@ from .serializers import (
     SupplierSerializer, UserSerializer
 )
 from django.contrib.auth.models import User
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_root(request):
+    """Multi-Branch Inventory Management API - Core features only."""
+    base = request.build_absolute_uri('/api/').rstrip('/')
+    return Response({
+        'title': 'Multi-Branch Inventory Management API',
+        'description': 'Centralized backend for multiple store branches',
+        'core_features': {
+            'branches': {
+                'url': f'{base}/branches/',
+                'description': 'Create branches',
+            },
+            'products': {
+                'url': f'{base}/products/',
+                'description': 'Add products',
+            },
+            'stocks': {
+                'url': f'{base}/stocks/',
+                'description': 'Stock per branch — assign and query by branch (filter ?branch=id)',
+                'actions': {
+                    'add_stock': f'{base}/stocks/add_stock/',
+                    'record_sale': f'{base}/stocks/record_sale/',
+                    'low_stock': f'{base}/stocks/low_stock/',
+                },
+            },
+            'transfers': {
+                'url': f'{base}/transfers/',
+                'description': 'Transfer stock between branches',
+                'actions': {
+                    'complete_transfer': f'{base}/transfers/{{id}}/complete_transfer/',
+                    'cancel_transfer': f'{base}/transfers/{{id}}/cancel_transfer/',
+                },
+            },
+            'history': {
+                'url': f'{base}/history/',
+                'description': 'View stock movement history (IN, OUT, TRANSFER, SALE)',
+            },
+            'low_stock_alerts': {
+                'url': f'{base}/stocks/low_stock/',
+                'description': 'Low stock alert logic',
+            },
+        },
+        'endpoints': {
+            'branches': f'{base}/branches/',
+            'products': f'{base}/products/',
+            'stocks': f'{base}/stocks/',
+            'transfers': f'{base}/transfers/',
+            'history': f'{base}/history/',
+            'dashboard': f'{base}/dashboard/',
+        },
+    })
+
 
 class BranchViewSet(viewsets.ModelViewSet):
     queryset = Branch.objects.all()

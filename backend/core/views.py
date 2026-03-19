@@ -97,7 +97,11 @@ class StockViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Invalid quantity'}, status=status.HTTP_400_BAD_REQUEST)
 
         with transaction.atomic():
-            stock = Stock.objects.select_for_update().get(branch_id=branch_id, product_id=product_id)
+            try:
+                stock = Stock.objects.select_for_update().get(branch_id=branch_id, product_id=product_id)
+            except Stock.DoesNotExist:
+                return Response({'error': 'Stock record not found'}, status=status.HTTP_400_BAD_REQUEST)
+                
             if stock.quantity < quantity:
                 return Response({'error': 'Insufficient stock'}, status=status.HTTP_400_BAD_REQUEST)
             
@@ -165,9 +169,13 @@ class StockTransferViewSet(viewsets.ModelViewSet):
 
         with transaction.atomic():
             # Deduct from source branch
-            source_stock = Stock.objects.select_for_update().get(
-                branch=transfer.from_branch, product=transfer.product
-            )
+            try:
+                source_stock = Stock.objects.select_for_update().get(
+                    branch=transfer.from_branch, product=transfer.product
+                )
+            except Stock.DoesNotExist:
+                return Response({'error': 'Source stock record not found'}, status=status.HTTP_400_BAD_REQUEST)
+
             if source_stock.quantity < transfer.quantity:
                 return Response({'error': 'Insufficient stock in source branch'}, status=status.HTTP_400_BAD_REQUEST)
             

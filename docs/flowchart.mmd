@@ -1,0 +1,48 @@
+flowchart TD
+    Start([Start]) --> Login(User Logs In)
+    Login --> RoleCheck{Check User Role}
+    
+    RoleCheck -- Global Admin --> AdminDash[Admin Dashboard]
+    RoleCheck -- Branch Staff --> StaffDash[Branch Staff Dashboard]
+    
+    StaffDash --> ViewStock[View Local Branch Stock]
+    ViewStock --> ActionChoice{Select Action}
+    
+    ActionChoice -- Record Sale / Modify Stock --> UpdateStock[Record IN/OUT/SALE]
+    UpdateStock --> RecHistory[Log in Stock Movement History]
+    RecHistory --> DB2[(Database Updated)]
+    
+    ActionChoice -- Request Transfer --> CreateTransfer[Create Stock Transfer Request]
+    CreateTransfer --> DB1[(Saved as PENDING in DB)]
+    
+    AdminDash --> AdminActionChoice{Select Action}
+    
+    AdminActionChoice -- Manage System Entities --> ManageEntities[Manage Suppliers / Products / Branches / Users]
+    ManageEntities --> DB_GLOBAL[(Database Updated)]
+    
+    AdminActionChoice -- View Pending Transfers --> ViewTransfers[Review Transfer Request]
+    DB1 -.-> ViewTransfers
+    
+    ViewTransfers --> ApproveTrans{Approve Transfer?}
+    
+    ApproveTrans -- Yes --> CompleteTransfer[Set Status to COMPLETED]
+    CompleteTransfer --> DeductSrc[Deduct Stock from Source Branch]
+    DeductSrc --> AddDest[Add Stock to Destination Branch]
+    AddDest --> RecTransHistory[Record TRANSFER in Movement History]
+    RecTransHistory --> DB3[(Database Updated)]
+    
+    ApproveTrans -- No --> CancelTransfer[Set Status to CANCELLED]
+    CancelTransfer --> DB4[(Transfer Cancelled in DB)]
+    
+    DB2 --> End([Finish Workflow])
+    DB_GLOBAL --> End
+    DB3 --> End
+    DB4 --> End
+
+    classDef conditional fill:#ffdfba,stroke:#f2a65a,stroke-width:2px
+    classDef database fill:#bae1ff,stroke:#5fa8d3,stroke-width:2px
+    classDef startend fill:#baffc9,stroke:#74c69d,stroke-width:2px
+    
+    class RoleCheck,ActionChoice,AdminActionChoice,ApproveTrans conditional;
+    class DB1,DB2,DB3,DB4,DB_GLOBAL database;
+    class Start,End startend;

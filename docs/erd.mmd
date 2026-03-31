@@ -1,0 +1,74 @@
+erDiagram
+    User {
+        int id PK
+        string username
+        string email
+        string password
+    }
+    Profile {
+        int id PK
+        int user_id FK
+        string role "ADMIN / STAFF"
+        int branch_id FK
+    }
+    Branch {
+        int id PK
+        string name
+        string location
+    }
+    Supplier {
+        int id PK
+        string name
+        string contact_person
+        string email
+        string phone
+        string address
+    }
+    Product {
+        int id PK
+        string name
+        string description
+        string sku
+        decimal price
+        int supplier_id FK
+    }
+    Stock {
+        int id PK
+        int branch_id FK
+        int product_id FK
+        int quantity
+        int low_stock_threshold
+    }
+    StockTransfer {
+        int id PK
+        int product_id FK
+        int from_branch_id FK
+        int to_branch_id FK
+        int quantity
+        string status "PENDING/COMPLETED/CANCELLED"
+        int created_by_id FK
+        datetime created_at
+    }
+    StockMovementHistory {
+        int id PK
+        int branch_id FK
+        int product_id FK
+        string movement_type "IN/OUT/TRANSFER/SALE"
+        int quantity
+        string reference
+        int performed_by_id FK
+        datetime date
+    }
+
+    User ||--|| Profile : has
+    Profile }o--o| Branch : assigned_to
+    Supplier ||--o{ Product : supplies
+    Branch ||--o{ Stock : physically_holds
+    Product ||--o{ Stock : stored_as
+    Branch ||--o{ StockTransfer : sends_stock
+    Branch ||--o{ StockTransfer : receives_stock
+    Product ||--o{ StockTransfer : involves
+    User ||--o{ StockTransfer : initiates
+    Branch ||--o{ StockMovementHistory : tracks_history_for
+    Product ||--o{ StockMovementHistory : records_for
+    User ||--o{ StockMovementHistory : performs

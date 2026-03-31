@@ -1,0 +1,31 @@
+flowchart LR
+    Admin(["Global Admin"])
+    Staff(["Branch Staff"])
+    
+    subgraph "System Boundary: Multi-Branch Inventory Management System"
+        direction TB
+        UC1([Manage Branches and Suppliers])
+        UC2([Manage Global Products Catalog])
+        UC3([Manage Users & Profiles])
+        UC4([View All Branch Stocks & Alerts])
+        UC5([Manage Specific Branch Stock In/Out])
+        UC6([Initiate Stock Transfer locally])
+        UC7([Approve & Complete Stock Transfers])
+        UC8([Record Local Sales & Deductions])
+        UC9([View Stock Movement History])
+    end
+    
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    Admin --> UC4
+    Admin --> UC7
+    Admin --> UC9
+    
+    Staff --> UC5
+    Staff --> UC6
+    Staff --> UC8
+    Staff --> UC9
+    
+    classDef usecase fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    class UC1,UC2,UC3,UC4,UC5,UC6,UC7,UC8,UC9 usecase;

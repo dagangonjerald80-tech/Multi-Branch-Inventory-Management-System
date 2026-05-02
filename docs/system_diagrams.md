@@ -190,3 +190,64 @@ flowchart TD
     class DB1,DB2,DB3,DB4,DB_GLOBAL database;
     class Start,End startend;
 ```
+
+---
+
+## 4. Swimlane Diagram
+
+This swimlane diagram separates the system process into lanes for the User, Branch Staff, Global Admin, and the System/Database. It highlights how transfer requests and stock updates flow between the actors and the backend.
+
+```mermaid
+flowchart TB
+    %% Swimlane-style process for the Multi-Branch Inventory Management System
+    subgraph U[User]
+        direction TB
+        U1[Login & Select Branch]
+        U2[Choose Action]
+    end
+
+    subgraph S[Branch Staff]
+        direction TB
+        BS1[View Local Stock]
+        BS2[Create Transfer Request]
+        BS3[Record Sale / Adjust Stock]
+    end
+
+    subgraph A[Global Admin]
+        direction TB
+        GA1[Review Pending Transfers]
+        GA2[Approve or Cancel Transfer]
+        GA3[Manage Products / Suppliers / Branches / Users]
+    end
+
+    subgraph D[System / Database]
+        direction TB
+        DB1[(Pending Transfer Request)]
+        DB2[(Stock Movement History)]
+        DB3[(Updated Branch Stock)]
+    end
+
+    U1 --> U2
+    U2 --> BS1
+    BS1 --> U2
+
+    U2 -- "Request Transfer" --> BS2
+    BS2 --> DB1
+    DB1 --> GA1
+
+    U2 -- "Record Sale / Stock Adjustment" --> BS3
+    BS3 --> DB2
+
+    GA1 --> GA2
+    GA2 -- "Approve" --> GA3
+    GA3 --> DB3
+    GA3 --> DB2
+
+    GA2 -- "Cancel" --> DB1
+
+    classDef lane fill:#f0f8ff,stroke:#0f4c75,stroke-width:1px;
+    class U,S,A,D lane;
+    classDef database fill:#d6e7ff,stroke:#19647e,stroke-width:2px;
+    class DB1,DB2,DB3 database;
+```
+```

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import importlib.util
 import os
 import dj_database_url
 from pathlib import Path
@@ -22,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z_=tac^30_ebw@(xjjs1qn9!j9rp!==8l3i#4gntm!fq6b_9-w'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-z_=tac^30_ebw@(xjjs1qn9!j9rp!==8l3i#4gntm!fq6b_9-w')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
@@ -40,9 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'core',
 ]
+
+if importlib.util.find_spec('cloudinary') and importlib.util.find_spec('cloudinary_storage'):
+    INSTALLED_APPS += [
+        'cloudinary',
+        'cloudinary_storage',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -61,7 +69,7 @@ ROOT_URLCONF = 'inventory_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -124,7 +132,50 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files use Cloudinary when django-cloudinary-storage is installed;
+# otherwise local file storage keeps development/test commands runnable.
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+_cloudinary_available = importlib.util.find_spec('cloudinary_storage') is not None
+MEDIA_FILE_STORAGE = (
+    'cloudinary_storage.storage.MediaCloudinaryStorage'
+    if _cloudinary_available
+    else 'django.core.files.storage.FileSystemStorage'
+)
+STORAGES = {
+    'default': {
+        'BACKEND': MEDIA_FILE_STORAGE,
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
+}
+
+# Email verification defaults to console output for local development.
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@inventory.local')
+
+# Django REST Framework / Djoser authentication.
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}
+
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+ACTIVATION_URL = 'activate/{uid}/{token}'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field

@@ -1,15 +1,22 @@
-from rest_framework import viewsets, status
+from rest_framework import serializers, viewsets, status
 from rest_framework.decorators import api_view, permission_classes, action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.response import Response
+from django.contrib.auth import authenticate
+from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction, models
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 from .models import Branch, Product, Stock, StockTransfer, StockMovementHistory, Supplier
 from .serializers import (
     BranchSerializer, ProductSerializer, StockSerializer,
     StockTransferSerializer, StockMovementHistorySerializer,
-    SupplierSerializer, UserSerializer
+    SupplierSerializer, UserSerializer, ProfileUpdateSerializer, UserCreateSerializer
 )
 from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+from .emails import send_activation_email
 
 
 @api_view(['GET'])
@@ -65,6 +72,59 @@ def api_root(request):
         },
     })
 
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_user(request):
+    serializer = UserCreateSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.save()
+    send_activation_email(request, user)
+    return Response(UserSerializer(user, context={'request': request}).data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def activate_user(request):
+    uid = request.data.get('uid')
+    token = request.data.get('token')
+    try:
+        user_id = force_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(pk=user_id)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return Response({'error': 'Invalid activation link.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not default_token_generator.check_token(user, token):
+        return Response({'error': 'Invalid or expired activation token.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.is_active = True
+    user.save(update_fields=['is_active'])
+    return Response({'status': 'Account activated successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def jwt_create(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+    try:
+        user_obj = User.objects.get(email__iexact=email)
+    except User.DoesNotExist:
+        raise serializers.ValidationError({'detail': 'No active account found with the given credentials.'})
+
+    user = authenticate(request, username=user_obj.username, password=password)
+    if user is None or not user.is_active:
+        raise serializers.ValidationError({'detail': 'No active account found with the given credentials.'})
+
+    refresh = RefreshToken.for_user(user)
+    return Response({'refresh': str(refresh), 'access': str(refresh.access_token)})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def current_user(request):
+    return Response(UserSerializer(request.user, context={'request': request}).data)
 
 class BranchViewSet(viewsets.ModelViewSet):
     queryset = Branch.objects.all()
@@ -237,6 +297,42 @@ class SupplierViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class ProfileViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [JSONParser, FormParser, MultiPartParser]
+
+    def list(self, request):
+        serializer = ProfileUpdateSerializer(request.user, context={'request': request})
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get', 'patch'], url_path='me')
+    def me(self, request):
+        if request.method == 'GET':
+            serializer = ProfileUpdateSerializer(request.user, context={'request': request})
+            return Response(serializer.data)
+
+        user = request.user
+        data = request.data
+        for field in ('username', 'first_name', 'last_name'):
+            if field in data:
+                setattr(user, field, data.get(field, ''))
+        user.save()
+
+        profile = user.profile
+        if 'phone' in data:
+            profile.phone = data.get('phone', '')
+        if 'branch' in data and data.get('branch'):
+            profile.branch_id = data.get('branch')
+        if 'branch' in data and data.get('branch') in ('', None):
+            profile.branch = None
+        if 'avatar' in request.FILES:
+            profile.avatar = request.FILES['avatar']
+        profile.save()
+
+        serializer = ProfileUpdateSerializer(user, context={'request': request})
+        return Response(serializer.data)
 
 class DashboardStatsView(viewsets.ViewSet):
     def list(self, request):

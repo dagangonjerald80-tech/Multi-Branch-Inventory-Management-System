@@ -8,6 +8,7 @@ const nav = [
   { to: '/transfers', label: 'Transfers' },
   { to: '/history', label: 'History' },
   { to: '/low-stock', label: 'Low Stock' },
+  { to: '/profile', label: 'Profile' },
 ];
 
 export default function Layout({ children }) {

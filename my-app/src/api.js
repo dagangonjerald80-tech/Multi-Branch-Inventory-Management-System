@@ -6,11 +6,16 @@ const API_BASE = (apiUrl || 'http://localhost:8000/api').replace(/\/$/, '');
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
+  const token = localStorage.getItem('accessToken');
+  const isFormData = options.body instanceof FormData;
+  const headers = { ...options.headers };
+  if (!isFormData) headers['Content-Type'] = 'application/json';
+  if (token) headers.Authorization = `Bearer ${token}`;
   const config = {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
     ...options,
+    headers,
   };
-  if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
+  if (options.body && typeof options.body === 'object' && !isFormData) {
     config.body = JSON.stringify(options.body);
   }
   const res = await fetch(url, config);
@@ -85,5 +90,24 @@ export const api = {
   },
   dashboard: {
     get: () => request('/dashboard/'),
+  },
+  auth: {
+    register: (data) => request('/auth/users/', { method: 'POST', body: data }),
+    login: async (email, password) => {
+      const data = await request('/auth/jwt/create/', { method: 'POST', body: { email, password } });
+      localStorage.setItem('accessToken', data.access);
+      localStorage.setItem('refreshToken', data.refresh);
+      return data;
+    },
+    logout: () => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+    },
+    activate: (uid, token) => request('/auth/users/activation/', { method: 'POST', body: { uid, token } }),
+    me: () => request('/auth/users/me/'),
+  },
+  profile: {
+    me: () => request('/profile/me/'),
+    update: (data) => request('/profile/me/', { method: 'PATCH', body: data }),
   },
 };

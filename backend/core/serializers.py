@@ -18,13 +18,90 @@ class SupplierSerializer(serializers.ModelSerializer):
         model = Supplier
         fields = '__all__'
 
+class UserCreateSerializer(serializers.ModelSerializer):
+    re_password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'password', 're_password']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError('A user with this email already exists.')
+        return value
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs.pop('re_password'):
+            raise serializers.ValidationError({'re_password': 'Passwords do not match.'})
+        return attrs
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.is_active = False
+        user.set_password(password)
+        user.save()
+        return user
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    branch_name = serializers.ReadOnlyField(source='branch.name')
+    avatar_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Profile
+        fields = ['role', 'branch', 'branch_name', 'phone', 'avatar', 'avatar_url']
+        read_only_fields = ['role']
+
+    def get_avatar_url(self, obj):
+        if not obj.avatar:
+            return ''
+        request = self.context.get('request')
+        url = obj.avatar.url
+        return request.build_absolute_uri(url) if request and url.startswith('/') else url
+
+
 class UserSerializer(serializers.ModelSerializer):
     role = serializers.CharField(source='profile.role', read_only=True)
+    branch = serializers.PrimaryKeyRelatedField(source='profile.branch', read_only=True)
     branch_name = serializers.ReadOnlyField(source='profile.branch.name', read_only=True)
+    phone = serializers.CharField(source='profile.phone', read_only=True)
+    avatar_url = serializers.SerializerMethodField()
+    is_active = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'branch_name']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_active', 'role', 'branch', 'branch_name', 'phone', 'avatar_url']
+
+    def get_avatar_url(self, obj):
+        profile = getattr(obj, 'profile', None)
+        if not profile or not profile.avatar:
+            return ''
+        request = self.context.get('request')
+        url = profile.avatar.url
+        return request.build_absolute_uri(url) if request and url.startswith('/') else url
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile']
+        read_only_fields = ['id', 'email']
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', {})
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        profile = instance.profile
+        for attr, value in profile_data.items():
+            setattr(profile, attr, value)
+        profile.save()
+        return instance
 
 class StockSerializer(serializers.ModelSerializer):
     product_name = serializers.ReadOnlyField(source='product.name')

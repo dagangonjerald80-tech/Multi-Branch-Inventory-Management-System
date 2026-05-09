@@ -7,6 +7,9 @@ import Stock from './pages/Stock';
 import Transfers from './pages/Transfers';
 import History from './pages/History';
 import LowStock from './pages/LowStock';
+import { Login, Register } from './pages/Auth';
+import Activate from './pages/Activate';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -20,6 +23,10 @@ function App() {
           <Route path="/transfers" element={<Transfers />} />
           <Route path="/history" element={<History />} />
           <Route path="/low-stock" element={<LowStock />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/activate/:uid/:token" element={<Activate />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </Layout>
     </BrowserRouter>

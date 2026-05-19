@@ -24,10 +24,14 @@ class Profile(models.Model):
     ROLES = [
         ('ADMIN', 'Global Admin'),
         ('STAFF', 'Branch Staff'),
+        ('USER', 'Standard User'),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    role = models.CharField(max_length=10, choices=ROLES, default='STAFF')
+    role = models.CharField(max_length=10, choices=ROLES, default='USER')
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)
+    is_email_verified = models.BooleanField(default=False)
+    email_verification_code = models.CharField(max_length=6, blank=True, null=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
@@ -35,7 +39,13 @@ class Profile(models.Model):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
+        if instance.is_superuser:
+            role, verified = 'ADMIN', True
+        elif instance.is_staff:
+            role, verified = 'STAFF', True
+        else:
+            role, verified = 'USER', False
+        Profile.objects.create(user=instance, role=role, is_email_verified=verified)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
@@ -48,6 +58,7 @@ class Product(models.Model):
     sku = models.CharField(max_length=100, unique=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    image = models.ImageField(upload_to='products/', blank=True, null=True)
     
     def __str__(self):
         return self.name

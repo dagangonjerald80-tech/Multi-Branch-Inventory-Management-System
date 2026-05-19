@@ -57,6 +57,12 @@ export default function Transfers() {
     api.transfers.cancel(id).then(load).catch((e) => setError(e.message || e.data?.error));
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm('Delete this transfer record?')) {
+      api.transfers.delete(id).then(load).catch((e) => setError(e.message || e.data?.error));
+    }
+  };
+
   if (loading) return (
     <div className="p-4 text-slate-500">Loading transfers...</div>
   );
@@ -186,7 +192,21 @@ export default function Transfers() {
                       >
                         Cancel
                       </button>
+                      <button
+                        className="ml-2 px-2 py-1 text-sm border border-slate-300 text-slate-600 rounded hover:bg-slate-50"
+                        onClick={() => handleDelete(t.id)}
+                      >
+                        Delete
+                      </button>
                     </>
+                  )}
+                  {t.status !== 'PENDING' && t.status !== 'COMPLETED' && (
+                    <button
+                      className="px-2 py-1 text-sm border border-slate-300 text-slate-600 rounded hover:bg-slate-50"
+                      onClick={() => handleDelete(t.id)}
+                    >
+                      Delete
+                    </button>
                   )}
                 </td>
               </tr>

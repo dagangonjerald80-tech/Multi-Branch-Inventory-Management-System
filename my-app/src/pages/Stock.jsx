@@ -27,14 +27,35 @@ export default function Stock() {
     load();
   }, [branchFilter]);
 
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const validate = () => {
+    const errors = {};
+    if (!form.branch_id) errors.branch_id = 'Please select a branch.';
+    if (!form.product_id) errors.product_id = 'Please select a product.';
+    const q = parseInt(form.quantity, 10);
+    if (isNaN(q) || q <= 0) errors.quantity = 'Quantity must be at least 1.';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const [editingStock, setEditingStock] = useState(null);
+
+  const resetForm = () => {
+    setAction(null);
+    setEditingStock(null);
+    setForm({ branch_id: '', product_id: '', quantity: '' });
+    setFieldErrors({});
+  };
+
   const handleAddStock = (e) => {
     e.preventDefault();
-    const q = parseInt(form.quantity, 10);
-    if (!q || q <= 0) return setError('Invalid quantity');
-    api.stocks.addStock(form.branch_id, form.product_id, q)
+    setError(null);
+    if (!validate()) return;
+    
+    api.stocks.addStock(form.branch_id, form.product_id, parseInt(form.quantity, 10))
       .then(() => {
-        setAction(null);
-        setForm({ branch_id: '', product_id: '', quantity: '' });
+        resetForm();
         load();
       })
       .catch((e) => setError(e.message || e.data?.error));
@@ -42,74 +63,118 @@ export default function Stock() {
 
   const handleRecordSale = (e) => {
     e.preventDefault();
-    const q = parseInt(form.quantity, 10);
-    if (!q || q <= 0) return setError('Invalid quantity');
-    api.stocks.recordSale(form.branch_id, form.product_id, q)
+    setError(null);
+    if (!validate()) return;
+
+    api.stocks.recordSale(form.branch_id, form.product_id, parseInt(form.quantity, 10))
       .then(() => {
-        setAction(null);
-        setForm({ branch_id: '', product_id: '', quantity: '' });
+        resetForm();
         load();
       })
       .catch((e) => setError(e.message || e.data?.error));
   };
 
-  const renderActionForm = () => (
-    <form
-      className="mb-6 bg-white rounded-lg shadow p-6 max-w-md"
-      onSubmit={action === 'add' ? handleAddStock : handleRecordSale}
-    >
-      <h2 className="text-lg font-semibold mb-4">{action === 'add' ? 'Add Stock' : 'Record Sale'}</h2>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Branch</label>
-          <select
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            value={form.branch_id}
-            onChange={(e) => setForm({ ...form, branch_id: e.target.value })}
-            required
-          >
-            <option value="">Select</option>
-            {branches.map((b) => (
-              <option key={b.id} value={b.id}>{b.name}</option>
-            ))}
-          </select>
+  const handleUpdateThreshold = (e) => {
+    e.preventDefault();
+    const threshold = parseInt(form.quantity, 10);
+    if (isNaN(threshold) || threshold < 0) {
+      setFieldErrors({ quantity: 'Threshold must be 0 or more.' });
+      return;
+    }
+    api.stocks.update(editingStock.id, { low_stock_threshold: threshold })
+      .then(() => {
+        resetForm();
+        load();
+      })
+      .catch((e) => setError(e.message));
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('Delete this stock record?')) {
+      api.stocks.delete(id).then(load).catch((e) => setError(e.message));
+    }
+  };
+
+  const renderActionForm = () => {
+    let title = 'Action';
+    let submitFn = handleAddStock;
+    if (action === 'add') title = 'Add Stock';
+    if (action === 'sale') { title = 'Record Sale'; submitFn = handleRecordSale; }
+    if (action === 'threshold') { title = 'Update Threshold'; submitFn = handleUpdateThreshold; }
+
+    return (
+      <form
+        className="mb-6 bg-white rounded-[2rem] shadow-2xl p-8 max-w-md border border-slate-100"
+        onSubmit={submitFn}
+      >
+        <h2 className="text-xl font-black text-slate-900 mb-6">{title}</h2>
+        <div className="space-y-4">
+          {action !== 'threshold' ? (
+            <>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1.5">Branch</label>
+                <select
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/5 transition-all outline-none ${fieldErrors.branch_id ? 'border-red-500' : 'border-slate-200'}`}
+                  value={form.branch_id}
+                  onChange={(e) => setForm({ ...form, branch_id: e.target.value })}
+                  required
+                >
+                  <option value="">Select branch</option>
+                  {branches.map((b) => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </select>
+                {fieldErrors.branch_id && <p className="mt-1 text-xs text-red-600 font-bold">{fieldErrors.branch_id}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1.5">Product</label>
+                <select
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/5 transition-all outline-none ${fieldErrors.product_id ? 'border-red-500' : 'border-slate-200'}`}
+                  value={form.product_id}
+                  onChange={(e) => setForm({ ...form, product_id: e.target.value })}
+                  required
+                >
+                  <option value="">Select product</option>
+                  {products.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+                {fieldErrors.product_id && <p className="mt-1 text-xs text-red-600 font-bold">{fieldErrors.product_id}</p>}
+              </div>
+            </>
+          ) : (
+            <div className="p-3 bg-slate-50 rounded-xl mb-2">
+              <p className="text-sm font-bold text-slate-700">{editingStock.product_name}</p>
+              <p className="text-xs text-slate-500">{editingStock.branch_name}</p>
+            </div>
+          )}
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-1.5">
+              {action === 'threshold' ? 'Low Stock Threshold' : 'Quantity'}
+            </label>
+            <input
+              type="number"
+              min={action === 'threshold' ? "0" : "1"}
+              placeholder="0"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/5 transition-all outline-none font-bold ${fieldErrors.quantity ? 'border-red-500' : 'border-slate-200'}`}
+              value={form.quantity}
+              onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+              required
+            />
+            {fieldErrors.quantity && <p className="mt-1 text-xs text-red-600 font-bold">{fieldErrors.quantity}</p>}
+          </div>
+          <div className="flex gap-3 pt-4">
+            <button type="submit" className="flex-1 py-3.5 bg-blue-600 text-white font-black rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95">
+              SAVE
+            </button>
+            <button type="button" className="flex-1 py-3.5 border border-slate-200 text-slate-700 font-black rounded-xl hover:bg-slate-50 transition-all" onClick={resetForm}>
+              CANCEL
+            </button>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Product</label>
-          <select
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            value={form.product_id}
-            onChange={(e) => setForm({ ...form, product_id: e.target.value })}
-            required
-          >
-            <option value="">Select</option>
-            {products.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
-          <input
-            type="number"
-            min="1"
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            value={form.quantity}
-            onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-            required
-          />
-        </div>
-        <div className="flex gap-2">
-          <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            Submit
-          </button>
-          <button type="button" className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50" onClick={() => setAction(null)}>
-            Cancel
-          </button>
-        </div>
-      </div>
-    </form>
-  );
+      </form>
+    );
+  };
 
   if (loading) return (
     <div className="p-4 text-slate-500">Loading...</div>
@@ -164,6 +229,7 @@ export default function Stock() {
               <th className="text-left py-3 px-4 font-medium text-slate-600">SKU</th>
               <th className="text-left py-3 px-4 font-medium text-slate-600">Quantity</th>
               <th className="text-left py-3 px-4 font-medium text-slate-600">Threshold</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -181,6 +247,20 @@ export default function Stock() {
                   {s.quantity}
                 </td>
                 <td className="py-3 px-4">{s.low_stock_threshold}</td>
+                <td className="py-3 px-4 text-sm">
+                  <button 
+                    onClick={() => { setEditingStock(s); setAction('threshold'); setForm({...form, quantity: s.low_stock_threshold}); }} 
+                    className="mr-3 text-blue-600 hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(s.id)} 
+                    className="text-red-600 hover:underline"
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

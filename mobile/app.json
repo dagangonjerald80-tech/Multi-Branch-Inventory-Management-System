@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "inventory-mobile",
+    "slug": "inventory-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "sdkVersion": "52.0.0",
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

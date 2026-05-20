@@ -4,7 +4,7 @@ import { api } from '../api';
 const statusBadge = {
   PENDING: 'bg-amber-100 text-amber-800',
   COMPLETED: 'bg-emerald-100 text-emerald-800',
-  CANCELLED: 'bg-slate-100 text-slate-600',
+  CANCELLED: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400',
 };
 
 export default function Transfers() {
@@ -64,12 +64,12 @@ export default function Transfers() {
   };
 
   if (loading) return (
-    <div className="p-4 text-slate-500">Loading transfers...</div>
+    <div className="p-4 text-slate-500 dark:text-slate-400">Loading transfers...</div>
   );
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Stock Transfers</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">Stock Transfers</h1>
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
       )}
@@ -83,13 +83,13 @@ export default function Transfers() {
         </button>
       ) : (
         <form
-          className="mb-6 bg-white rounded-lg shadow p-6 max-w-md"
+          className="mb-6 bg-white dark:bg-slate-800 rounded-lg shadow p-6 max-w-md"
           onSubmit={handleCreate}
         >
           <h2 className="text-lg font-semibold mb-4">Create Transfer</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Product</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product</label>
               <select
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={form.product}
@@ -103,7 +103,7 @@ export default function Transfers() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">From Branch</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">From Branch</label>
               <select
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={form.from_branch}
@@ -117,7 +117,7 @@ export default function Transfers() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">To Branch</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">To Branch</label>
               <select
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={form.to_branch}
@@ -131,7 +131,7 @@ export default function Transfers() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Quantity</label>
               <input
                 type="number"
                 min="1"
@@ -145,7 +145,7 @@ export default function Transfers() {
               <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 Create
               </button>
-              <button type="button" className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50" onClick={() => setShowForm(false)}>
+              <button type="button" className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-900" onClick={() => setShowForm(false)}>
                 Cancel
               </button>
             </div>
@@ -153,27 +153,27 @@ export default function Transfers() {
         </form>
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Product</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">From</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">To</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Quantity</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Status</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Actions</th>
+            <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Product</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">From</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">To</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Quantity</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Status</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Actions</th>
             </tr>
           </thead>
           <tbody>
             {transfers.map((t) => (
-              <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50">
+              <tr key={t.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900">
                 <td className="py-3 px-4">{t.product_name}</td>
                 <td className="py-3 px-4">{t.from_branch_name}</td>
                 <td className="py-3 px-4">{t.to_branch_name}</td>
                 <td className="py-3 px-4">{t.quantity}</td>
                 <td className="py-3 px-4">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusBadge[t.status] || 'bg-slate-100'}`}>
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusBadge[t.status] || 'bg-slate-100 dark:bg-slate-800'}`}>
                     {t.status}
                   </span>
                 </td>
@@ -193,7 +193,7 @@ export default function Transfers() {
                         Cancel
                       </button>
                       <button
-                        className="ml-2 px-2 py-1 text-sm border border-slate-300 text-slate-600 rounded hover:bg-slate-50"
+                        className="ml-2 px-2 py-1 text-sm border border-slate-300 text-slate-600 dark:text-slate-400 rounded hover:bg-slate-50 dark:bg-slate-900"
                         onClick={() => handleDelete(t.id)}
                       >
                         Delete
@@ -202,7 +202,7 @@ export default function Transfers() {
                   )}
                   {t.status !== 'PENDING' && t.status !== 'COMPLETED' && (
                     <button
-                      className="px-2 py-1 text-sm border border-slate-300 text-slate-600 rounded hover:bg-slate-50"
+                      className="px-2 py-1 text-sm border border-slate-300 text-slate-600 dark:text-slate-400 rounded hover:bg-slate-50 dark:bg-slate-900"
                       onClick={() => handleDelete(t.id)}
                     >
                       Delete

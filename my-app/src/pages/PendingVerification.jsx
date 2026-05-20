@@ -85,14 +85,14 @@ export default function PendingVerification() {
   return (
     <div className="auth-page">
       <div className="w-full max-w-md glass-card p-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-1 text-center">Verify your email</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1 text-center">Verify your email</h1>
         
         {showEdit ? (
           <form onSubmit={handleChangeEmail} className="space-y-4 mb-6">
-            <p className="text-slate-600 text-sm mb-4 text-center">Update your account email address:</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 text-center">Update your account email address:</p>
             <input
               type="email"
-              className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 px-4 py-3 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               placeholder="Enter correct email"
@@ -108,7 +108,7 @@ export default function PendingVerification() {
               <button
                 type="button"
                 onClick={() => setShowEdit(false)}
-                className="flex-1 rounded-xl border border-slate-200 py-3 text-slate-700 text-sm font-bold hover:bg-white/50 transition-all"
+                className="flex-1 rounded-xl border border-slate-200 dark:border-slate-700 py-3 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all"
               >
                 Cancel
               </button>
@@ -116,9 +116,9 @@ export default function PendingVerification() {
           </form>
         ) : (
           <>
-            <p className="text-slate-600 text-sm mb-6 text-center leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-400 text-sm mb-6 text-center leading-relaxed">
               Enter the 6-digit code sent to <br/>
-              <strong className="text-slate-900">{user?.email}</strong>.
+              <strong className="text-slate-900 dark:text-slate-100">{user?.email}</strong>.
               <button 
                 onClick={() => {
                   setNewEmail(user?.email || '');
@@ -135,12 +135,12 @@ export default function PendingVerification() {
 
             <form onSubmit={handleVerifyCode} className="space-y-5 mb-8">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2 text-center uppercase tracking-wider">Verification Code</label>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 text-center uppercase tracking-wider">Verification Code</label>
                 <input
                   type="text"
                   placeholder="000000"
                   maxLength={6}
-                  className="w-full rounded-2xl border border-slate-200 bg-white/50 px-4 py-5 text-center text-4xl tracking-[0.5em] font-bold font-mono focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none shadow-inner"
+                  className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 px-4 py-5 text-center text-4xl tracking-[0.5em] font-bold font-mono focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none shadow-inner text-slate-900 dark:text-slate-100"
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
                   required
@@ -167,7 +167,7 @@ export default function PendingVerification() {
             />
             <button
               type="submit"
-              className="w-full rounded-xl bg-slate-900/5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-900/10 transition-all"
+              className="w-full rounded-xl bg-slate-900/5 py-3 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-900/10 transition-all"
             >
               Resend Code
             </button>
@@ -176,7 +176,7 @@ export default function PendingVerification() {
           <button
             type="button"
             onClick={handleRecheck}
-            className="w-full rounded-xl border border-slate-200 py-3 text-sm font-bold text-slate-700 hover:bg-white/50 transition-all"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 py-3 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all"
           >
             I verified — refresh status
           </button>

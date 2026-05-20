@@ -204,7 +204,7 @@ export default function Login() {
             <div>
               <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">Username</label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500">
+                <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500 dark:text-slate-400">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -224,7 +224,7 @@ export default function Login() {
             <div>
               <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">Password</label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500">
+                <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500 dark:text-slate-400">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>

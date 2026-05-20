@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import Chatbot from './Chatbot';
 import { useAuth, useIsAdmin } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const nav = [
   { 
@@ -92,6 +93,7 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const isAdmin = useIsAdmin();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   const linkCls = (to) => {
     const isActive = location.pathname === to;
@@ -110,7 +112,7 @@ export default function Layout() {
 
   return (
     <>
-      <div className="flex min-h-screen flex-col md:flex-row bg-slate-50">
+      <div className="flex min-h-screen flex-col md:flex-row bg-slate-50 dark:bg-slate-900 dark:bg-slate-900 transition-colors duration-300">
         {/* Mobile Header */}
         <header className="flex items-center justify-between gap-2 bg-slate-950 px-6 py-4 text-white md:hidden shadow-lg border-b border-white/5 z-20">
           <div className="flex items-center gap-2">
@@ -121,14 +123,31 @@ export default function Layout() {
             </div>
             <span className="font-black text-sm tracking-widest uppercase">Nexus Stock</span>
           </div>
-          <button
-            type="button"
-            className="rounded-xl border border-white/10 px-4 py-2 text-xs font-black bg-white/5 hover:bg-white/10 active:scale-95 transition-all"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-expanded={menuOpen}
-          >
-            MENU
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"
+              aria-label="Toggle dark mode"
+            >
+              {isDarkMode ? (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              )}
+            </button>
+            <button
+              type="button"
+              className="rounded-xl border border-white/10 px-4 py-2 text-xs font-black bg-white/5 hover:bg-white/10 active:scale-95 transition-all"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-expanded={menuOpen}
+            >
+              MENU
+            </button>
+          </div>
         </header>
 
         {/* Sidebar container */}
@@ -189,22 +208,39 @@ export default function Layout() {
                   </div>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={logout}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 py-3 text-xs font-black text-slate-300 hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-400 active:scale-95 transition-all"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                SIGN OUT
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={toggleDarkMode}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 py-3 text-xs font-black text-slate-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all"
+                  aria-label="Toggle dark mode"
+                >
+                  {isDarkMode ? (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 py-3 text-xs font-black text-slate-300 hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-400 active:scale-95 transition-all"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                </button>
+              </div>
             </div>
           )}
         </nav>
 
         {/* Content Panel */}
-        <main className="flex-1 p-6 md:p-10 bg-slate-50 min-h-0 overflow-y-auto">
+        <main className="flex-1 p-6 md:p-10 bg-slate-50 dark:bg-slate-900 dark:bg-slate-900 text-slate-900 dark:text-slate-100 dark:text-slate-100 min-h-0 overflow-y-auto transition-colors duration-300">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>

@@ -58,12 +58,12 @@ export default function Suppliers() {
   };
 
   if (loading) return (
-    <div className="p-4 text-slate-500">Loading suppliers...</div>
+    <div className="p-4 text-slate-500 dark:text-slate-400">Loading suppliers...</div>
   );
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Suppliers</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">Suppliers</h1>
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
       )}
@@ -79,13 +79,13 @@ export default function Suppliers() {
         )
       ) : (
         <form
-          className="mb-6 bg-white rounded-lg shadow p-6 max-w-md"
+          className="mb-6 bg-white dark:bg-slate-800 rounded-lg shadow p-6 max-w-md"
           onSubmit={handleSubmit}
         >
           <h2 className="text-lg font-semibold mb-4">{editing ? 'Edit' : 'Add'} Supplier</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
               <input
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 value={form.name}
@@ -94,7 +94,7 @@ export default function Suppliers() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Contact Person</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Contact Person</label>
               <input
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 value={form.contact_person}
@@ -103,7 +103,7 @@ export default function Suppliers() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
                 <input
                   type="email"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -112,7 +112,7 @@ export default function Suppliers() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Phone</label>
                 <input
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   value={form.phone}
@@ -121,7 +121,7 @@ export default function Suppliers() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Address</label>
               <textarea
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 value={form.address}
@@ -132,7 +132,7 @@ export default function Suppliers() {
               <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 Save
               </button>
-              <button type="button" className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50" onClick={resetForm}>
+              <button type="button" className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-900" onClick={resetForm}>
                 Cancel
               </button>
             </div>
@@ -140,27 +140,27 @@ export default function Suppliers() {
         </form>
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Name</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Contact</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Phone</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Actions</th>
+            <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Name</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Contact</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Phone</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Actions</th>
             </tr>
           </thead>
           <tbody>
             {suppliers.map((s) => (
-              <tr key={s.id} className="border-b border-slate-100 hover:bg-slate-50">
-                <td className="py-3 px-4 font-medium text-slate-900">{s.name}</td>
-                <td className="py-3 px-4 text-slate-600">{s.contact_person || '-'}</td>
-                <td className="py-3 px-4 text-slate-600">{s.phone || '-'}</td>
+              <tr key={s.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900">
+                <td className="py-3 px-4 font-medium text-slate-900 dark:text-slate-100">{s.name}</td>
+                <td className="py-3 px-4 text-slate-600 dark:text-slate-400">{s.contact_person || '-'}</td>
+                <td className="py-3 px-4 text-slate-600 dark:text-slate-400">{s.phone || '-'}</td>
                 <td className="py-3 px-4">
                   {isAdmin ? (
                     <>
                       <button
-                        className="mr-2 px-2 py-1 text-sm border border-slate-300 rounded hover:bg-slate-100"
+                        className="mr-2 px-2 py-1 text-sm border border-slate-300 rounded hover:bg-slate-100 dark:bg-slate-800"
                         onClick={() => handleEdit(s)}
                       >
                         Edit

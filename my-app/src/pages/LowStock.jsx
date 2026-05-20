@@ -15,36 +15,36 @@ export default function LowStock() {
   }, []);
 
   if (loading) return (
-    <div className="p-4 text-slate-500">Loading low stock items...</div>
+    <div className="p-4 text-slate-500 dark:text-slate-400">Loading low stock items...</div>
   );
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Low Stock Alerts</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">Low Stock Alerts</h1>
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
       )}
 
       {items.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-slate-500">No low stock items. All inventory levels are above thresholds.</p>
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+          <p className="text-slate-500 dark:text-slate-400">No low stock items. All inventory levels are above thresholds.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="bg-red-50 border-b border-red-100">
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Branch</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Product</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">SKU</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Current</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Threshold</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Action</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Branch</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Product</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">SKU</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Current</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Threshold</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Action</th>
               </tr>
             </thead>
             <tbody>
               {items.map((s) => (
-                <tr key={s.id} className="border-b border-slate-100 hover:bg-slate-50">
+                <tr key={s.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900">
                   <td className="py-3 px-4">{s.branch_name}</td>
                   <td className="py-3 px-4">{s.product_name}</td>
                   <td className="py-3 px-4">{s.product_sku}</td>

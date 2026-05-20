@@ -108,12 +108,12 @@ export default function Products() {
   };
 
   if (loading) return (
-    <div className="p-4 text-slate-500">Loading products...</div>
+    <div className="p-4 text-slate-500 dark:text-slate-400">Loading products...</div>
   );
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Products</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">Products</h1>
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
       )}
@@ -127,17 +127,17 @@ export default function Products() {
             Add Product
           </button>
         ) : (
-          <p className="mb-6 text-sm text-slate-600">Read-only (User role). Ask an admin to make changes.</p>
+          <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">Read-only (User role). Ask an admin to make changes.</p>
         )
       ) : (
         <form
-          className="mb-6 bg-white rounded-lg shadow p-6 max-w-md"
+          className="mb-6 bg-white dark:bg-slate-800 rounded-lg shadow p-6 max-w-md"
           onSubmit={handleSubmit}
         >
           <h2 className="text-lg font-semibold mb-4">{editing ? 'Edit' : 'Add'} Product</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
               <input
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${fieldErrors.name ? 'border-red-500' : 'border-slate-300'}`}
                 value={form.name}
@@ -147,7 +147,7 @@ export default function Products() {
               {fieldErrors.name && <p className="mt-1 text-xs text-red-600 font-medium">{fieldErrors.name}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">SKU</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">SKU</label>
               <input
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${fieldErrors.sku ? 'border-red-500' : 'border-slate-300'}`}
                 value={form.sku}
@@ -157,7 +157,7 @@ export default function Products() {
               {fieldErrors.sku && <p className="mt-1 text-xs text-red-600 font-medium">{fieldErrors.sku}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Price</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Price</label>
               <input
                 type="number"
                 step="0.01"
@@ -169,7 +169,7 @@ export default function Products() {
               {fieldErrors.price && <p className="mt-1 text-xs text-red-600 font-medium">{fieldErrors.price}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
               <textarea
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[80px]"
                 value={form.description}
@@ -177,7 +177,7 @@ export default function Products() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Supplier</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Supplier</label>
               <select
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={form.supplier}
@@ -190,7 +190,7 @@ export default function Products() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Product image</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product image</label>
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
@@ -203,7 +203,7 @@ export default function Products() {
               <button type="submit" className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all">
                 {editing ? 'Update Product' : 'Save Product'}
               </button>
-              <button type="button" className="px-6 py-2.5 border border-slate-200 font-bold rounded-xl hover:bg-slate-50 transition-all" onClick={resetForm}>
+              <button type="button" className="px-6 py-2.5 border border-slate-200 dark:border-slate-700 font-bold rounded-xl hover:bg-slate-50 dark:bg-slate-900 transition-all" onClick={resetForm}>
                 Cancel
               </button>
             </div>
@@ -211,24 +211,24 @@ export default function Products() {
         </form>
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Image</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Name</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">SKU</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Price</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Supplier</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Actions</th>
+            <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Image</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Name</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">SKU</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Price</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Supplier</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Actions</th>
             </tr>
           </thead>
           <tbody>
             {products.map((p) => (
-              <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50">
+              <tr key={p.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900">
                 <td className="py-3 px-4">
                   {p.image_url ? (
-                    <img src={p.image_url} alt="" className="h-10 w-10 rounded object-cover border border-slate-200" />
+                    <img src={p.image_url} alt="" className="h-10 w-10 rounded object-cover border border-slate-200 dark:border-slate-700" />
                   ) : (
                     <span className="text-slate-400 text-xs">—</span>
                   )}
@@ -241,7 +241,7 @@ export default function Products() {
                   {isAdmin ? (
                     <>
                       <button
-                        className="mr-2 px-2 py-1 text-sm border border-slate-300 rounded hover:bg-slate-100"
+                        className="mr-2 px-2 py-1 text-sm border border-slate-300 rounded hover:bg-slate-100 dark:bg-slate-800"
                         onClick={() => handleEdit(p)}
                       >
                         Edit

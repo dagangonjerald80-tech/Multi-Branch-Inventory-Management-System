@@ -104,17 +104,17 @@ export default function Stock() {
 
     return (
       <form
-        className="mb-6 bg-white rounded-[2rem] shadow-2xl p-8 max-w-md border border-slate-100"
+        className="mb-6 bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl p-8 max-w-md border border-slate-100 dark:border-slate-700"
         onSubmit={submitFn}
       >
-        <h2 className="text-xl font-black text-slate-900 mb-6">{title}</h2>
+        <h2 className="text-xl font-black text-slate-900 dark:text-slate-100 mb-6">{title}</h2>
         <div className="space-y-4">
           {action !== 'threshold' ? (
             <>
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Branch</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Branch</label>
                 <select
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/5 transition-all outline-none ${fieldErrors.branch_id ? 'border-red-500' : 'border-slate-200'}`}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/5 transition-all outline-none ${fieldErrors.branch_id ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'}`}
                   value={form.branch_id}
                   onChange={(e) => setForm({ ...form, branch_id: e.target.value })}
                   required
@@ -127,9 +127,9 @@ export default function Stock() {
                 {fieldErrors.branch_id && <p className="mt-1 text-xs text-red-600 font-bold">{fieldErrors.branch_id}</p>}
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Product</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Product</label>
                 <select
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/5 transition-all outline-none ${fieldErrors.product_id ? 'border-red-500' : 'border-slate-200'}`}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/5 transition-all outline-none ${fieldErrors.product_id ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'}`}
                   value={form.product_id}
                   onChange={(e) => setForm({ ...form, product_id: e.target.value })}
                   required
@@ -143,20 +143,20 @@ export default function Stock() {
               </div>
             </>
           ) : (
-            <div className="p-3 bg-slate-50 rounded-xl mb-2">
-              <p className="text-sm font-bold text-slate-700">{editingStock.product_name}</p>
-              <p className="text-xs text-slate-500">{editingStock.branch_name}</p>
+            <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl mb-2">
+              <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{editingStock.product_name}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{editingStock.branch_name}</p>
             </div>
           )}
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1.5">
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">
               {action === 'threshold' ? 'Low Stock Threshold' : 'Quantity'}
             </label>
             <input
               type="number"
               min={action === 'threshold' ? "0" : "1"}
               placeholder="0"
-              className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/5 transition-all outline-none font-bold ${fieldErrors.quantity ? 'border-red-500' : 'border-slate-200'}`}
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/5 transition-all outline-none font-bold ${fieldErrors.quantity ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'}`}
               value={form.quantity}
               onChange={(e) => setForm({ ...form, quantity: e.target.value })}
               required
@@ -167,7 +167,7 @@ export default function Stock() {
             <button type="submit" className="flex-1 py-3.5 bg-blue-600 text-white font-black rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95">
               SAVE
             </button>
-            <button type="button" className="flex-1 py-3.5 border border-slate-200 text-slate-700 font-black rounded-xl hover:bg-slate-50 transition-all" onClick={resetForm}>
+            <button type="button" className="flex-1 py-3.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-black rounded-xl hover:bg-slate-50 dark:bg-slate-900 transition-all" onClick={resetForm}>
               CANCEL
             </button>
           </div>
@@ -177,18 +177,18 @@ export default function Stock() {
   };
 
   if (loading) return (
-    <div className="p-4 text-slate-500">Loading...</div>
+    <div className="p-4 text-slate-500 dark:text-slate-400">Loading...</div>
   );
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Stock by Branch</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">Stock by Branch</h1>
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
       )}
 
       <div className="mb-6 flex items-center gap-2">
-        <label className="text-sm font-medium text-slate-700">Branch filter:</label>
+        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Branch filter:</label>
         <select
           className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           value={branchFilter}
@@ -210,7 +210,7 @@ export default function Stock() {
             Add Stock
           </button>
           <button
-            className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50"
+            className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-900"
             onClick={() => setAction('sale')}
           >
             Record Sale
@@ -220,23 +220,23 @@ export default function Stock() {
         renderActionForm()
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Branch</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Product</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">SKU</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Quantity</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Threshold</th>
-              <th className="text-left py-3 px-4 font-medium text-slate-600">Actions</th>
+            <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Branch</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Product</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">SKU</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Quantity</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Threshold</th>
+              <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Actions</th>
             </tr>
           </thead>
           <tbody>
             {stocks.map((s) => (
               <tr
                 key={s.id}
-                className={`border-b border-slate-100 hover:bg-slate-50 ${
+                className={`border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900 ${
                   s.quantity <= s.low_stock_threshold ? 'bg-red-50' : ''
                 }`}
               >

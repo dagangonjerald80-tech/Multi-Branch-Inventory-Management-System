@@ -100,7 +100,7 @@ export default function UsersAdmin() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Users (admin)</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">Users (admin)</h1>
       {error && <div className="mb-4 rounded-lg bg-red-50 px-4 py-2 text-red-700 text-sm">{error}</div>}
 
       {!showForm ? (
@@ -113,7 +113,7 @@ export default function UsersAdmin() {
         </button>
       ) : (
         <form
-          className="mb-6 max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow"
+          className="mb-6 max-w-lg rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow"
           onSubmit={handleSubmit}
         >
           <h2 className="text-lg font-semibold mb-4">{editing ? 'Edit' : 'New'} user</h2>
@@ -190,10 +190,10 @@ export default function UsersAdmin() {
         </form>
       )}
 
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-600">
+            <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-left text-slate-600 dark:text-slate-400">
               <th className="px-4 py-2">User</th>
               <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Role</th>
@@ -203,12 +203,12 @@ export default function UsersAdmin() {
           </thead>
           <tbody>
             {users.map((u) => (
-              <tr key={u.id} className="border-b border-slate-100">
-                <td className="px-4 py-2 font-medium text-slate-900">
+              <tr key={u.id} className="border-b border-slate-100 dark:border-slate-700">
+                <td className="px-4 py-2 font-medium text-slate-900 dark:text-slate-100">
                   <Link className="text-blue-600 hover:underline" to={`/users/${u.id}`}>
                     {u.username}
                   </Link>
-                  <div className="text-slate-500 font-normal text-xs">
+                  <div className="text-slate-500 dark:text-slate-400 font-normal text-xs">
                     {u.first_name} {u.last_name}
                   </div>
                 </td>
@@ -224,7 +224,7 @@ export default function UsersAdmin() {
           </tbody>
         </table>
       </div>
-      <p className="mt-4 text-sm text-slate-500">
+      <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
         <Link className="text-blue-600 hover:underline" to="/profile">
           Profile & avatar
         </Link>{' '}

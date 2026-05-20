@@ -49,7 +49,7 @@ export default function UserDetail() {
   }
 
   if (!user) {
-    return <div className="text-slate-500 text-sm">Loading…</div>;
+    return <div className="text-slate-500 dark:text-slate-400 text-sm">Loading…</div>;
   }
 
   const isSelf = me && String(me.id) === String(user.id);
@@ -63,46 +63,46 @@ export default function UserDetail() {
       >
         ← {isAdmin ? 'All users' : 'Profile'}
       </button>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">User details</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">User details</h1>
 
-      <div className="max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow">
+      <div className="max-w-lg rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow">
         <div className="flex items-center gap-4 mb-6">
           {user.avatar_url ? (
             <img src={user.avatar_url} alt="" className="h-16 w-16 rounded-full object-cover border" />
           ) : (
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 text-lg font-semibold text-slate-600">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 text-lg font-semibold text-slate-600 dark:text-slate-400">
               {(user.first_name?.[0] || user.username?.[0] || '?').toUpperCase()}
             </div>
           )}
           <div>
-            <p className="text-lg font-semibold text-slate-900">{user.username}</p>
-            <p className="text-sm text-slate-600">
+            <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{user.username}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               {user.first_name} {user.last_name}
             </p>
           </div>
         </div>
 
         <dl className="space-y-3 text-sm">
-          <div className="flex justify-between gap-4 border-b border-slate-100 pb-2">
-            <dt className="text-slate-500">Email</dt>
-            <dd className="text-slate-900 text-right break-all">{user.email}</dd>
+          <div className="flex justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-2">
+            <dt className="text-slate-500 dark:text-slate-400">Email</dt>
+            <dd className="text-slate-900 dark:text-slate-100 text-right break-all">{user.email}</dd>
           </div>
-          <div className="flex justify-between gap-4 border-b border-slate-100 pb-2">
-            <dt className="text-slate-500">Role</dt>
-            <dd className="font-medium text-slate-900">{user.role}</dd>
+          <div className="flex justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-2">
+            <dt className="text-slate-500 dark:text-slate-400">Role</dt>
+            <dd className="font-medium text-slate-900 dark:text-slate-100">{user.role}</dd>
           </div>
-          <div className="flex justify-between gap-4 border-b border-slate-100 pb-2">
-            <dt className="text-slate-500">Branch</dt>
-            <dd className="text-slate-900 text-right">{user.branch_name || '—'}</dd>
+          <div className="flex justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-2">
+            <dt className="text-slate-500 dark:text-slate-400">Branch</dt>
+            <dd className="text-slate-900 dark:text-slate-100 text-right">{user.branch_name || '—'}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-slate-500">Email verified</dt>
-            <dd className="text-slate-900">{user.is_email_verified ? 'Yes' : 'No'}</dd>
+            <dt className="text-slate-500 dark:text-slate-400">Email verified</dt>
+            <dd className="text-slate-900 dark:text-slate-100">{user.is_email_verified ? 'Yes' : 'No'}</dd>
           </div>
         </dl>
 
         {isSelf && (
-          <p className="mt-6 text-sm text-slate-500">
+          <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
             <Link className="font-medium text-blue-600 hover:underline" to="/profile">
               Edit your profile or avatar
             </Link>

@@ -16,7 +16,7 @@ export default function Dashboard() {
   }, []);
 
   if (loading) return (
-    <div className="p-4 text-slate-500">Loading dashboard...</div>
+    <div className="p-4 text-slate-500 dark:text-slate-400">Loading dashboard...</div>
   );
   if (error) return (
     <div className="p-4 bg-red-50 text-red-700 rounded-lg">Error: {error}</div>
@@ -52,10 +52,10 @@ export default function Dashboard() {
     <div className="space-y-8 pb-10">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Overview</h1>
-          <p className="text-slate-500 font-medium">Welcome back to your inventory control center.</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Overview</h1>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">Welcome back to your inventory control center.</p>
         </div>
-        <div className="flex items-center gap-2 text-sm font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-4 py-2 rounded-full">
+        <div className="flex items-center gap-2 text-sm font-bold text-slate-400 uppercase tracking-widest bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full">
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
           System Online
         </div>
@@ -85,7 +85,7 @@ export default function Dashboard() {
           <div className="bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center mb-4 text-xl">⚠️</div>
           <span className="block text-3xl font-black mb-1">{stats.low_stock_alerts}</span>
           <span className="text-rose-100 text-sm font-bold uppercase tracking-wider">Low Stock</span>
-          {stats.low_stock_alerts > 0 && <div className="absolute top-4 right-4 w-3 h-3 rounded-full bg-white animate-ping"></div>}
+          {stats.low_stock_alerts > 0 && <div className="absolute top-4 right-4 w-3 h-3 rounded-full bg-white dark:bg-slate-800 animate-ping"></div>}
         </div>
 
         <div className="bg-gradient-to-br from-slate-700 to-slate-900 rounded-3xl shadow-xl shadow-slate-500/20 p-6 text-white transform hover:scale-[1.02] transition-all">
@@ -99,10 +99,10 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Sales Trend Interactive SVG Area Chart */}
-        <section className="lg:col-span-2 bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 p-8 border border-slate-100 relative">
+        <section className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 dark:shadow-none p-8 border border-slate-100 dark:border-slate-700 relative">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-black text-slate-900">Weekly Sales Activity</h2>
+              <h2 className="text-xl font-black text-slate-900 dark:text-slate-100">Weekly Sales Activity</h2>
               <p className="text-slate-400 text-xs mt-0.5">Interactive visual flow of branch retail sales</p>
             </div>
             <span className="text-xs font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-wider">Live Trend</span>
@@ -282,19 +282,19 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Stock by Branch */}
-        <section className="lg:col-span-2 bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 p-8 border border-slate-100">
+        <section className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 dark:shadow-none p-8 border border-slate-100 dark:border-slate-700">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-black text-slate-900">Stock Distribution</h2>
+            <h2 className="text-xl font-black text-slate-900 dark:text-slate-100">Stock Distribution</h2>
             <Link to="/branches" className="text-blue-600 font-bold text-sm hover:underline">View All Branches</Link>
           </div>
           <div className="space-y-6">
             {stock_by_branch.map((b) => (
               <div key={b.name} className="group">
                 <div className="flex justify-between mb-2 px-1">
-                  <span className="text-sm font-bold text-slate-700 group-hover:text-blue-600 transition-colors">{b.name}</span>
-                  <span className="text-sm font-black text-slate-900">{b.value} units</span>
+                  <span className="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 transition-colors">{b.name}</span>
+                  <span className="text-sm font-black text-slate-900 dark:text-slate-100">{b.value} units</span>
                 </div>
-                <div className="h-3 bg-slate-100 rounded-full overflow-hidden p-0.5">
+                <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5">
                   <div
                     className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-1000 shadow-sm"
                     style={{ width: `${Math.min(100, (b.value / maxStock) * 100)}%` }}
@@ -307,20 +307,20 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Activity Table */}
-      <section className="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 p-8 border border-slate-100 overflow-hidden">
+      <section className="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 dark:shadow-none p-8 border border-slate-100 dark:border-slate-700 overflow-hidden">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-xl font-black text-slate-900">Recent Transactions</h2>
+          <h2 className="text-xl font-black text-slate-900 dark:text-slate-100">Recent Transactions</h2>
           <Link to="/history" className="text-blue-600 font-bold text-sm hover:underline">Full History</Link>
         </div>
         <div className="overflow-x-auto -mx-8">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-slate-50/50 border-y border-slate-100">
-                <th className="py-4 px-8 text-xs font-black text-slate-500 uppercase tracking-widest">Operation</th>
-                <th className="py-4 px-8 text-xs font-black text-slate-500 uppercase tracking-widest">Product</th>
-                <th className="py-4 px-8 text-xs font-black text-slate-500 uppercase tracking-widest">Location</th>
-                <th className="py-4 px-8 text-xs font-black text-slate-500 uppercase tracking-widest text-center">Amount</th>
-                <th className="py-4 px-8 text-xs font-black text-slate-500 uppercase tracking-widest">Timestamp</th>
+              <tr className="bg-slate-50/50 border-y border-slate-100 dark:border-slate-700">
+                <th className="py-4 px-8 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Operation</th>
+                <th className="py-4 px-8 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Product</th>
+                <th className="py-4 px-8 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Location</th>
+                <th className="py-4 px-8 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest text-center">Amount</th>
+                <th className="py-4 px-8 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Timestamp</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -335,9 +335,9 @@ export default function Dashboard() {
                       {a.movement_type}
                     </span>
                   </td>
-                  <td className="py-5 px-8 font-bold text-slate-700">{a.product_name}</td>
-                  <td className="py-5 px-8 text-slate-500 font-medium">{a.branch_name}</td>
-                  <td className="py-5 px-8 text-center font-black text-slate-900">{a.quantity}</td>
+                  <td className="py-5 px-8 font-bold text-slate-700 dark:text-slate-300">{a.product_name}</td>
+                  <td className="py-5 px-8 text-slate-500 dark:text-slate-400 font-medium">{a.branch_name}</td>
+                  <td className="py-5 px-8 text-center font-black text-slate-900 dark:text-slate-100">{a.quantity}</td>
                   <td className="py-5 px-8 text-slate-400 text-sm font-medium">{a.date_formatted}</td>
                 </tr>
               ))}

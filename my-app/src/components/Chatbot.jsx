@@ -8,7 +8,7 @@ function RichText({ text }) {
       {line.split(/(\*\*[^*]+\*\*)/g).map((segment, si) => {
         if (segment.startsWith('**') && segment.endsWith('**')) {
           return (
-            <strong key={si} className="font-semibold text-slate-900">
+            <strong key={si} className="font-semibold text-slate-900 dark:text-slate-100">
               {segment.slice(2, -2)}
             </strong>
           );
@@ -76,7 +76,7 @@ export default function Chatbot() {
       <div className="pointer-events-auto flex flex-col items-end gap-4">
         {open && (
           <div
-            className="flex max-h-[min(600px,80vh)] w-[min(100vw-2.5rem,420px)] flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-2xl animate-in slide-in-from-bottom-4 duration-300"
+            className="flex max-h-[min(600px,80vh)] w-[min(100vw-2.5rem,420px)] flex-col overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xl animate-in slide-in-from-bottom-4 duration-300"
             role="dialog"
             aria-label="Inventory chat assistant"
           >
@@ -99,7 +99,7 @@ export default function Chatbot() {
             </div>
 
             {/* Chat Area */}
-            <div ref={listRef} className="flex-1 space-y-4 overflow-y-auto p-6 bg-slate-50/50">
+            <div ref={listRef} className="flex-1 space-y-4 overflow-y-auto p-6 bg-slate-50/50 dark:bg-slate-900/50">
               {messages.map((msg, i) => (
                 <div
                   key={i}
@@ -109,7 +109,7 @@ export default function Chatbot() {
                     className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-sm ${
                       msg.role === 'user'
                         ? 'bg-blue-600 text-white rounded-tr-none'
-                        : 'bg-white text-slate-800 border border-slate-100 rounded-tl-none'
+                        : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-700 rounded-tl-none'
                     }`}
                   >
                     {msg.role === 'user' ? (
@@ -122,7 +122,7 @@ export default function Chatbot() {
               ))}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm">
+                  <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm">
                     <div className="flex gap-1">
                       <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></div>
                       <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
@@ -135,7 +135,7 @@ export default function Chatbot() {
 
             {/* Input Area */}
             <form
-              className="p-4 bg-white border-t border-slate-100"
+              className="p-4 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700"
               onSubmit={(e) => {
                 e.preventDefault();
                 send();
@@ -147,7 +147,7 @@ export default function Chatbot() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Type your question..."
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all pr-24"
+                  className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-5 py-4 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all pr-24"
                   disabled={loading}
                   autoComplete="off"
                 />

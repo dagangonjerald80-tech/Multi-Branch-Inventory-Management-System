@@ -77,6 +77,7 @@ export default function App() {
   const [dashboard, setDashboard] = useState(null);
   const [products, setProducts] = useState([]);
   const [stocks, setStocks] = useState([]);
+  const [history, setHistory] = useState([]);
   const [transfers, setTransfers] = useState([]);
   const [branches, setBranches] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
@@ -220,6 +221,9 @@ export default function App() {
         const url = stockBranchFilter ? `/stocks/?branch=${stockBranchFilter}` : '/stocks/';
         const stk = await apiFetch(url);
         setStocks(Array.isArray(stk) ? stk : stk.results || []);
+      } else if (tab === 'inventory' && invSubTab === 'history') {
+        const hist = await apiFetch('/history/');
+        setHistory(Array.isArray(hist) ? hist : hist.results || []);
       } else if (tab === 'transfers') {
         const trf = await apiFetch('/transfers/');
         setTransfers(Array.isArray(trf) ? trf : trf.results || []);
@@ -1202,6 +1206,7 @@ export default function App() {
                     { id: 'stocks', label: 'Stock Levels' },
                     { id: 'suppliers', label: 'Suppliers' },
                     { id: 'branches', label: 'Branches' },
+                    { id: 'history', label: 'History' },
                   ].map((sub) => (
                     <TouchableOpacity
                       key={sub.id}
@@ -1396,6 +1401,34 @@ export default function App() {
                               <Text style={styles.deleteBtnText}>Delete</Text>
                             </TouchableOpacity>
                           ) : null}
+                        </View>
+                      ))
+                    )}
+                  </View>
+                )}
+
+                {/* INVENTORY: HISTORY */}
+                {invSubTab === 'history' && (
+                  <View>
+                    <View style={styles.actionHeader}>
+                      <Text style={styles.sectionHeading}>Stock Movement History</Text>
+                    </View>
+
+                    {history.length === 0 ? (
+                      <View style={styles.card}>
+                        <Text style={styles.mutedText}>No inventory history available.</Text>
+                      </View>
+                    ) : (
+                      history.map((h) => (
+                        <View key={h.id} style={styles.itemRowCard}>
+                          <View style={{ flex: 1 }}>
+                            <Text style={styles.itemRowTitle}>{h.product_name}</Text>
+                            <Text style={styles.itemRowMeta}>
+                              <Text style={{ fontWeight: 'bold', color: '#3b82f6' }}>{h.movement_type}</Text> | Branch: {h.branch_name}
+                            </Text>
+                            <Text style={styles.itemRowMeta}>Quantity: <Text style={{ fontWeight: 'bold' }}>{h.quantity}</Text> | Ref: {h.reference || '-'}</Text>
+                            <Text style={styles.itemRowDesc}>By: {h.performed_by_name || '-'} at {h.date_formatted}</Text>
+                          </View>
                         </View>
                       ))
                     )}

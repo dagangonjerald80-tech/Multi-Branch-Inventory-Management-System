@@ -21,44 +21,44 @@ export default function History() {
   }, []);
 
   if (loading) return (
-    <div className="p-4 text-slate-500">Loading history...</div>
+    <div className="p-4 text-slate-500 dark:text-slate-400">Loading history...</div>
   );
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Stock Movement History</h1>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">Stock Movement History</h1>
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
       )}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Date</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Type</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Product</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Branch</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Quantity</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Reference</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Performed By</th>
+              <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Date</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Type</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Product</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Branch</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Quantity</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Reference</th>
+                <th className="text-left py-3 px-4 font-medium text-slate-600 dark:text-slate-400">Performed By</th>
               </tr>
             </thead>
             <tbody>
               {history.map((h) => (
-                <tr key={h.id} className="border-b border-slate-100 hover:bg-slate-50">
-                  <td className="py-3 px-4 text-sm text-slate-500">{h.date_formatted}</td>
+                <tr key={h.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900">
+                  <td className="py-3 px-4 text-sm text-slate-500 dark:text-slate-400">{h.date_formatted}</td>
                   <td className="py-3 px-4">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${typeBadge[h.movement_type] || 'bg-slate-100'}`}>
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${typeBadge[h.movement_type] || 'bg-slate-100 dark:bg-slate-800'}`}>
                       {h.movement_type}
                     </span>
                   </td>
                   <td className="py-3 px-4">{h.product_name}</td>
                   <td className="py-3 px-4">{h.branch_name}</td>
                   <td className="py-3 px-4">{h.quantity}</td>
-                  <td className="py-3 px-4 text-slate-500">{h.reference || '-'}</td>
-                  <td className="py-3 px-4 text-slate-500">{h.performed_by_name || '-'}</td>
+                  <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{h.reference || '-'}</td>
+                  <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{h.performed_by_name || '-'}</td>
                 </tr>
               ))}
             </tbody>

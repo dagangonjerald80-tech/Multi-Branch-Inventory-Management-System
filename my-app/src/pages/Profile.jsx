@@ -59,8 +59,8 @@ export default function Profile() {
   return (
     <div className="max-w-2xl">
       <header className="mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Your Profile</h1>
-        <p className="text-slate-500 font-medium">Manage your personal information and account settings.</p>
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Your Profile</h1>
+        <p className="text-slate-500 dark:text-slate-400 font-medium">Manage your personal information and account settings.</p>
       </header>
 
       {error && (
@@ -74,7 +74,7 @@ export default function Profile() {
         </div>
       )}
 
-      <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 overflow-hidden">
         {/* Profile Header Background */}
         <div className="h-32 bg-gradient-to-r from-indigo-600 to-blue-500 relative"></div>
         
@@ -84,7 +84,7 @@ export default function Profile() {
               {user.avatar_url ? (
                 <img src={user.avatar_url} alt="" className="h-28 w-28 rounded-3xl object-cover border-4 border-white shadow-xl" />
               ) : (
-                <div className="h-28 w-28 rounded-3xl bg-slate-100 border-4 border-white shadow-xl flex items-center justify-center text-3xl font-black text-slate-400">
+                <div className="h-28 w-28 rounded-3xl bg-slate-100 dark:bg-slate-800 border-4 border-white shadow-xl flex items-center justify-center text-3xl font-black text-slate-400">
                   {(user.first_name?.[0] || user.username?.[0] || '?').toUpperCase()}
                 </div>
               )}
@@ -94,7 +94,7 @@ export default function Profile() {
             </div>
             
             <div className="flex-1 pb-1">
-              <h2 className="text-2xl font-black text-slate-900">{user.username}</h2>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100">{user.username}</h2>
               <div className="flex flex-wrap gap-2 mt-2">
                 <span className="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-widest rounded-full">{user.role}</span>
                 {user.is_email_verified ? (
@@ -109,18 +109,18 @@ export default function Profile() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">First Name</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">First Name</label>
                 <input
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-900 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all outline-none font-medium"
+                  className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 px-4 py-3 text-slate-900 dark:text-slate-100 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all outline-none font-medium"
                   value={form.first_name}
                   onChange={(e) => setForm({ ...form, first_name: e.target.value })}
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Last Name</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Last Name</label>
                 <input
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-900 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all outline-none font-medium"
+                  className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 px-4 py-3 text-slate-900 dark:text-slate-100 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all outline-none font-medium"
                   value={form.last_name}
                   onChange={(e) => setForm({ ...form, last_name: e.target.value })}
                   required
@@ -129,10 +129,10 @@ export default function Profile() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
               <input
                 type="email"
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-900 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all outline-none font-medium"
+                className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 px-4 py-3 text-slate-900 dark:text-slate-100 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all outline-none font-medium"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
@@ -141,12 +141,12 @@ export default function Profile() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Update Avatar</label>
-              <div className="flex items-center gap-4 p-4 border-2 border-dashed border-slate-200 rounded-2xl hover:border-blue-400 transition-colors">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Update Avatar</label>
+              <div className="flex items-center gap-4 p-4 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl hover:border-blue-400 transition-colors">
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
-                  className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file && file.size > 2 * 1024 * 1024) {

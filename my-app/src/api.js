@@ -131,6 +131,8 @@ export const api = {
       request('/auth/resend-verification/', { method: 'POST', body: { email } }, false),
     changeEmail: (email) =>
       request('/auth/change-email/', { method: 'POST', body: { email } }),
+    changePassword: (old_password, new_password) =>
+      request('/auth/change-password/', { method: 'POST', body: { old_password, new_password } }),
   },
   me: {
     get: () => request('/users/me/'),

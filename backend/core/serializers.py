@@ -92,6 +92,7 @@ class UserSerializer(serializers.ModelSerializer):
     branch_name = serializers.ReadOnlyField(source='profile.branch.name', read_only=True)
     is_email_verified = serializers.BooleanField(source='profile.is_email_verified', read_only=True)
     avatar_url = serializers.SerializerMethodField(read_only=True)
+    bio = serializers.CharField(source='profile.bio', read_only=True)
 
     class Meta:
         model = User
@@ -106,6 +107,7 @@ class UserSerializer(serializers.ModelSerializer):
             'branch_name',
             'is_email_verified',
             'avatar_url',
+            'bio',
         ]
 
     def get_avatar_url(self, obj):
@@ -125,6 +127,9 @@ class UserMeSerializer(serializers.ModelSerializer):
     is_email_verified = serializers.BooleanField(source='profile.is_email_verified', read_only=True)
     avatar_url = serializers.SerializerMethodField(read_only=True)
     avatar = serializers.ImageField(required=False, allow_null=True, write_only=True)
+    cover_photo_url = serializers.SerializerMethodField(read_only=True)
+    cover_photo = serializers.ImageField(required=False, allow_null=True, write_only=True)
+    bio = serializers.CharField(source='profile.bio', required=False, allow_blank=True)
 
     class Meta:
         model = User
@@ -140,6 +145,9 @@ class UserMeSerializer(serializers.ModelSerializer):
             'is_email_verified',
             'avatar',
             'avatar_url',
+            'cover_photo',
+            'cover_photo_url',
+            'bio',
         ]
         read_only_fields = ['id', 'username', 'role', 'branch_name', 'is_email_verified']
 
@@ -151,6 +159,15 @@ class UserMeSerializer(serializers.ModelSerializer):
         if request:
             return request.build_absolute_uri(avatar.url)
         return avatar.url
+
+    def get_cover_photo_url(self, obj):
+        cover = getattr(obj.profile, 'cover_photo', None)
+        if not cover:
+            return None
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(cover.url)
+        return cover.url
 
     def validate_email(self, value):
         value = (value or '').strip().lower()
@@ -164,16 +181,42 @@ class UserMeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Avatar must be 2MB or smaller.')
         return img
 
+    def validate_cover_photo(self, img):
+        if img and img.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError('Cover photo must be 5MB or smaller.')
+        return img
+
     def update(self, instance, validated_data):
         avatar = validated_data.pop('avatar', None)
+        cover_photo = validated_data.pop('cover_photo', None)
+        
+        # Explicitly handle 'profile.bio' mapped via source
+        # DRF might put this in a nested 'profile' dict or as 'bio' depending on implementation
+        # but to be safe we pop anything related to profile that isn't on the User model.
+        bio = None
+        if 'profile' in validated_data:
+            profile_data = validated_data.pop('profile')
+            bio = profile_data.get('bio')
+        elif 'bio' in validated_data:
+            bio = validated_data.pop('bio')
+
         new_email = validated_data.get('email')
         if new_email and new_email.lower() != (instance.email or '').lower():
             instance.profile.is_email_verified = False
             instance.profile.save(update_fields=['is_email_verified'])
+        
         user = super().update(instance, validated_data)
+        
         if avatar is not None:
             user.profile.avatar = avatar
-            user.profile.save(update_fields=['avatar'])
+        if cover_photo is not None:
+            user.profile.cover_photo = cover_photo
+        if bio is not None:
+            user.profile.bio = bio
+            
+        if avatar is not None or cover_photo is not None or bio is not None:
+            user.profile.save()
+            
         return user
 
 

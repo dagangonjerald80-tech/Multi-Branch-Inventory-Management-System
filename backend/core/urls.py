@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .auth_views import EmailAwareTokenView, register, resend_verification, verify_email, change_email
+from .auth_views import EmailAwareTokenView, register, resend_verification, verify_email, change_email, change_password
 from .views import (
     api_root,
     chat_message,
@@ -34,6 +34,7 @@ urlpatterns = [
     path('auth/verify-email/', verify_email),
     path('auth/resend-verification/', resend_verification),
     path('auth/change-email/', change_email),
+    path('auth/change-password/', change_password),
     path('chat/', chat_message),
     path('', include(router.urls)),
 ]

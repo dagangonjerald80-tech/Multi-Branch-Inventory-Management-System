@@ -62,7 +62,7 @@ export default function Register() {
       <div className="auth-page min-h-screen flex items-center justify-center px-4 py-12">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none animate-pulse-slow" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-500/10 blur-[120px] pointer-events-none animate-pulse-slow" />
-        
+
         <div className="w-full max-w-md glass-card p-10 z-10 border border-white/5 relative text-center">
           <div className="flex justify-center mb-6">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
@@ -95,7 +95,7 @@ export default function Register() {
 
         <h1 className="text-3xl font-black text-white mb-2 text-center tracking-tight">Create Account</h1>
         <p className="text-slate-400 text-sm mb-8 text-center font-semibold tracking-wide uppercase">Register as a standard user</p>
-        
+
         {error && (
           <div className="mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 px-5 py-3 text-sm text-red-400 font-medium">
             {error}

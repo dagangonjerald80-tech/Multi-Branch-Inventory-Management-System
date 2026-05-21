@@ -39,27 +39,34 @@ export default function Login() {
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none animate-pulse-slow" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-500/10 blur-[120px] pointer-events-none animate-pulse-slow" />
 
+      {/* Wave-2 Background Animation */}
+      <div className="wave-wrapper">
+        <div className="wave"></div>
+        <div className="wave" style={{ left: "100%" }}></div>
+      </div>
+
       {/* LEFT COLUMN: Visual Illustrations (visible on md screens up) */}
-      <div className="hidden md:flex md:w-1/2 flex-col justify-between p-16 relative overflow-hidden z-10 border-r border-white/5 bg-slate-950/20 backdrop-blur-sm">
+      <div className="hidden md:flex md:w-1/2 flex-col justify-between p-16 relative overflow-hidden z-10 border-r border-white/5 bg-slate-950/20 backdrop-blur-sm animate-reveal">
         {/* Subtle grid lines background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-        
+        <div className="scan-line"></div>
+
         {/* Branding text top left */}
-        <div className="flex items-center gap-3 relative">
+        <div className="flex items-center gap-3 relative animate-reveal-delay-1">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
             <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
           </div>
           <span className="text-xl font-black text-white tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
-           Multi-Branch Inventory Management System
+            Multi-Branch Inventory Management System
           </span>
         </div>
 
         {/* Centerpiece Vector Illustration of Inventory Syncing */}
-        <div className="my-auto relative flex flex-col items-center justify-center py-10">
+        <div className="my-auto relative flex flex-col items-center justify-center py-10 animate-reveal-delay-2">
           <div className="w-full max-w-lg aspect-square relative flex items-center justify-center">
-            
+
             {/* The SVG Artwork representing Centralized Multi-Branch Control */}
             <svg className="w-[85%] h-[85%] z-10" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
               {/* Central Django Backend Server Hub */}
@@ -168,9 +175,9 @@ export default function Login() {
         </div>
 
         {/* Informative description text bottom left */}
-        <div className="relative z-10">
+        <div className="relative z-10 animate-reveal-delay-2">
           <h2 className="text-2xl font-black text-white mb-2 leading-tight">Multi-Branch Inventory Management
-System</h2>
+            System</h2>
           <p className="text-slate-400 text-sm max-w-md leading-relaxed">
             Monitor real-time product levels across all retail branches, complete secure stock transfers, and process transaction history with one secure dashboard.
           </p>
@@ -178,7 +185,7 @@ System</h2>
       </div>
 
       {/* RIGHT COLUMN: The Login Form Form Panel */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16 z-10 relative">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16 z-10 relative animate-reveal-left">
         <div className="w-full max-w-md glass-card p-10 border border-white/5 relative">
           {/* Subtle top edge glow */}
           <div className="absolute top-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"></div>
@@ -194,7 +201,7 @@ System</h2>
 
           <h1 className="text-3xl font-black text-white mb-2 text-center tracking-tight">Sign In</h1>
           <p className="text-slate-400 text-sm mb-8 text-center font-semibold tracking-wide uppercase">Inventory Dashboard</p>
-          
+
           {error && (
             <div className="mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 px-5 py-3 text-sm text-red-400 font-medium">
               {error}

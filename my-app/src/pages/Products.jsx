@@ -20,10 +20,11 @@ export default function Products() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState(null);
 
   const load = () => {
     api.products.list().then(setProducts).catch((e) => setError(e.message));
-    api.suppliers.list().then(setSuppliers).catch(() => {});
+    api.suppliers.list().then(setSuppliers).catch(() => { });
   };
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function Products() {
     const price = parseFloat(form.price);
     if (isNaN(price) || price < 0) errors.price = 'Price must be a positive number.';
     if (form.image && form.image.size > 2 * 1024 * 1024) errors.image = 'Image must be 2MB or smaller.';
-    
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -228,7 +229,12 @@ export default function Products() {
               <tr key={p.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900">
                 <td className="py-3 px-4">
                   {p.image_url ? (
-                    <img src={p.image_url} alt="" className="h-10 w-10 rounded object-cover border border-slate-200 dark:border-slate-700" />
+                    <img
+                      src={p.image_url}
+                      alt=""
+                      className="h-10 w-10 rounded object-cover border border-slate-200 dark:border-slate-700 cursor-zoom-in hover:opacity-80 transition-opacity"
+                      onClick={() => setZoomedImage(p.image_url)}
+                    />
                   ) : (
                     <span className="text-slate-400 text-xs">—</span>
                   )}
@@ -262,6 +268,30 @@ export default function Products() {
           </tbody>
         </table>
       </div>
+
+      {/* Image Zoom Overlay */}
+      {zoomedImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/90 backdrop-blur-sm p-4 animate-in fade-in duration-300"
+          onClick={() => setZoomedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full flex items-center justify-center">
+            <button 
+              className="absolute -top-12 right-0 text-white hover:text-slate-300 transition-colors"
+              onClick={() => setZoomedImage(null)}
+            >
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <img 
+              src={zoomedImage} 
+              alt="Zoomed" 
+              className="max-w-full max-h-[90vh] rounded-2xl shadow-2xl animate-in zoom-in-95 duration-300 object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

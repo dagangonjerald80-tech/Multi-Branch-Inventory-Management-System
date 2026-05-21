@@ -33,7 +33,7 @@ export default function Dashboard() {
   const paddingY = 40;
 
   const trendMax = Math.max(1, ...sales_trend.map((x) => x.sales));
-  
+
   const points = sales_trend.map((t, idx) => {
     const x = paddingX + (idx / (sales_trend.length - 1)) * (chartWidth - paddingX * 2);
     const y = chartHeight - paddingY - (t.sales / trendMax) * (chartHeight - paddingY * 2);
@@ -68,7 +68,7 @@ export default function Dashboard() {
           <span className="block text-3xl font-black mb-1">{stats.total_products}</span>
           <span className="text-blue-100 text-sm font-bold uppercase tracking-wider">Products</span>
         </div>
-        
+
         <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl shadow-xl shadow-emerald-500/20 p-6 text-white transform hover:scale-[1.02] transition-all">
           <div className="bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center mb-4 text-xl">🏢</div>
           <span className="block text-3xl font-black mb-1">{stats.total_branches}</span>
@@ -97,7 +97,7 @@ export default function Dashboard() {
 
       {/* Main Interactive Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+
         {/* Sales Trend Interactive SVG Area Chart */}
         <section className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 dark:shadow-none p-8 border border-slate-100 dark:border-slate-700 relative">
           <div className="flex items-center justify-between mb-4">
@@ -257,9 +257,9 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-4">
                 {low_stock_items.slice(0, 4).map((s) => (
-                  <Link 
-                    to="/low-stock" 
-                    key={s.id} 
+                  <Link
+                    to="/low-stock"
+                    key={s.id}
                     className="block p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all border border-white/5 group"
                   >
                     <div className="flex justify-between items-start mb-1">
@@ -327,11 +327,10 @@ export default function Dashboard() {
               {recent_activities.map((a) => (
                 <tr key={a.id} className="hover:bg-slate-50/80 transition-colors group">
                   <td className="py-5 px-8">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                      a.movement_type === 'SALE' ? 'bg-orange-100 text-orange-700' :
-                      a.movement_type === 'RESTOCK' ? 'bg-green-100 text-green-700' :
-                      'bg-blue-100 text-blue-700'
-                    }`}>
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${a.movement_type === 'SALE' ? 'bg-orange-100 text-orange-700' :
+                        a.movement_type === 'RESTOCK' ? 'bg-green-100 text-green-700' :
+                          'bg-blue-100 text-blue-700'
+                      }`}>
                       {a.movement_type}
                     </span>
                   </td>

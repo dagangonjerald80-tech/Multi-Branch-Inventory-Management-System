@@ -49,10 +49,10 @@ export default function Chatbot() {
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  async function send() {
-    const trimmed = input.trim();
+  async function send(textStr) {
+    const trimmed = (textStr || input).trim();
     if (!trimmed || loading) return;
-    setInput('');
+    if (!textStr) setInput('');
     setMessages((m) => [...m, { role: 'user', text: trimmed }]);
     setLoading(true);
     try {
@@ -131,6 +131,21 @@ export default function Chatbot() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Suggestions Chips */}
+            <div className="flex gap-2 overflow-x-auto p-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700 scrollbar-hide">
+              {['dashboard', 'low stock', 'suppliers', 'transfers', 'history'].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => send(s)}
+                  disabled={loading}
+                  className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-800 transition-colors shadow-sm disabled:opacity-50"
+                >
+                  {s}
+                </button>
+              ))}
             </div>
 
             {/* Input Area */}

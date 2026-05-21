@@ -88,6 +88,7 @@ class SupplierSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     role = serializers.CharField(source='profile.role', read_only=True)
+    branch_id = serializers.ReadOnlyField(source='profile.branch_id', read_only=True)
     branch_name = serializers.ReadOnlyField(source='profile.branch.name', read_only=True)
     is_email_verified = serializers.BooleanField(source='profile.is_email_verified', read_only=True)
     avatar_url = serializers.SerializerMethodField(read_only=True)
@@ -101,6 +102,7 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'role',
+            'branch_id',
             'branch_name',
             'is_email_verified',
             'avatar_url',
@@ -118,6 +120,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserMeSerializer(serializers.ModelSerializer):
     role = serializers.CharField(source='profile.role', read_only=True)
+    branch_id = serializers.ReadOnlyField(source='profile.branch_id', read_only=True)
     branch_name = serializers.ReadOnlyField(source='profile.branch.name', read_only=True)
     is_email_verified = serializers.BooleanField(source='profile.is_email_verified', read_only=True)
     avatar_url = serializers.SerializerMethodField(read_only=True)
@@ -132,6 +135,7 @@ class UserMeSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'role',
+            'branch_id',
             'branch_name',
             'is_email_verified',
             'avatar',

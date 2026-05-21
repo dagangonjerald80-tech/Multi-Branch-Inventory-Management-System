@@ -58,7 +58,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = '"Multi-Branch Inventory Management System" <' + EMAIL_HOST_USER + '>'
 FRONTEND_VERIFY_URL = os.environ.get('FRONTEND_VERIFY_URL', 'http://localhost:3000/verify-email')
 
 MEDIA_URL = '/media/'

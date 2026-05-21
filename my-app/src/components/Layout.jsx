@@ -112,7 +112,7 @@ export default function Layout() {
 
   return (
     <>
-      <div className="flex min-h-screen flex-col md:flex-row bg-slate-50 dark:bg-slate-900 dark:bg-slate-900 transition-colors duration-300">
+      <div className="flex min-h-screen flex-col md:flex-row bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
         {/* Mobile Header */}
         <header className="flex items-center justify-between gap-2 bg-slate-950 px-6 py-4 text-white md:hidden shadow-lg border-b border-white/5 z-20">
           <div className="flex items-center gap-2">
@@ -121,7 +121,7 @@ export default function Layout() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
             </div>
-            <span className="font-black text-sm tracking-widest uppercase">Nexus Stock</span>
+            <span className="font-black text-sm tracking-widest uppercase">Multi-Branch Inventory Management System</span>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -164,7 +164,7 @@ export default function Layout() {
               </svg>
             </div>
             <span className="text-lg font-black tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
-              Nexus Stock
+              Multi-Branch Inventory Management System
             </span>
           </div>
 
@@ -240,7 +240,7 @@ export default function Layout() {
         </nav>
 
         {/* Content Panel */}
-        <main className="flex-1 p-6 md:p-10 bg-slate-50 dark:bg-slate-900 dark:bg-slate-900 text-slate-900 dark:text-slate-100 dark:text-slate-100 min-h-0 overflow-y-auto transition-colors duration-300">
+        <main className="flex-1 p-6 md:p-10 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-0 overflow-y-auto transition-colors duration-300">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>

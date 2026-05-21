@@ -52,7 +52,7 @@ export default function Login() {
             </svg>
           </div>
           <span className="text-xl font-black text-white tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
-            Nexus Stock
+           Multi-Branch Inventory Management System
           </span>
         </div>
 
@@ -169,7 +169,8 @@ export default function Login() {
 
         {/* Informative description text bottom left */}
         <div className="relative z-10">
-          <h2 className="text-2xl font-black text-white mb-2 leading-tight">Centralized Inventory System</h2>
+          <h2 className="text-2xl font-black text-white mb-2 leading-tight">Multi-Branch Inventory Management
+System</h2>
           <p className="text-slate-400 text-sm max-w-md leading-relaxed">
             Monitor real-time product levels across all retail branches, complete secure stock transfers, and process transaction history with one secure dashboard.
           </p>

@@ -77,6 +77,12 @@ def chat_message(request):
             StockTransferSerializer(StockTransfer.objects.all().order_by('-created_at'), many=True).data
         )
 
+    def stocks_all():
+        return list(StockSerializer(Stock.objects.all(), many=True).data)
+
+    def suppliers_list():
+        return list(SupplierSerializer(Supplier.objects.all(), many=True).data)
+
     def history_list():
         return list(
             StockMovementHistorySerializer(
@@ -91,6 +97,8 @@ def chat_message(request):
         'products_list': products_list,
         'transfers_list': transfers_list,
         'history_list': history_list,
+        'stocks_all': stocks_all,
+        'suppliers_list': suppliers_list,
     }
     try:
         reply = build_reply(message, callables)

@@ -2,6 +2,9 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_save
+from django.core.mail import send_mail
+from django.conf import settings
 
 class Branch(models.Model):
     name = models.CharField(max_length=255)
@@ -109,3 +112,43 @@ class StockMovementHistory(models.Model):
 
     def __str__(self):
         return f"{self.movement_type} of {self.quantity} {self.product.name} at {self.branch.name}"
+
+@receiver(pre_save, sender=Stock)
+def check_stock_before_save(sender, instance, **kwargs):
+    if instance.pk:
+        try:
+            old_stock = Stock.objects.get(pk=instance.pk)
+            instance._was_low_stock = old_stock.quantity <= old_stock.low_stock_threshold
+        except Stock.DoesNotExist:
+            instance._was_low_stock = False
+    else:
+        instance._was_low_stock = False
+
+@receiver(post_save, sender=Stock)
+def send_low_stock_email(sender, instance, created, **kwargs):
+    is_low_stock = instance.quantity <= instance.low_stock_threshold
+    was_low_stock = getattr(instance, '_was_low_stock', False)
+    
+    if is_low_stock and not was_low_stock:
+        subject = 'Low Stock Alert'
+        body = f'Warning: {instance.product.name} in {instance.branch.name} is now below or equal to {instance.low_stock_threshold} items (Current: {instance.quantity}).'
+        
+        # Send to ADMIN and STAFF of that branch
+        from django.db.models import Q
+        users = User.objects.filter(
+            Q(profile__role='ADMIN') | 
+            Q(profile__role='STAFF', profile__branch=instance.branch)
+        )
+        emails = [u.email for u in users if u.email]
+        
+        if emails:
+            try:
+                send_mail(
+                    subject,
+                    body,
+                    getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@inventory.local'),
+                    emails,
+                    fail_silently=not settings.DEBUG,
+                )
+            except Exception as e:
+                print("Failed to send low stock alert:", e)

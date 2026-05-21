@@ -28,7 +28,9 @@ def build_reply(user_text, api_client_callables):
             '• **branches** o **sangay**\n'
             '• **products** o **produkto**\n'
             '• **transfers** o **lipat** (pending)\n'
-            '• **history** o **kasaysayan**\n\n'
+            '• **history** o **kasaysayan**\n'
+            '• **suppliers** o **supplier ng <produkto>**\n'
+            '• **stock ng <produkto>** o **ilan ang <produkto>**\n\n'
             'English o Tagalog — pareho pwede.'
         )
 
@@ -124,9 +126,49 @@ def build_reply(user_text, api_client_callables):
         lines.extend(['', 'Sidebar → **History** para sa buong listahan.'])
         return '\n'.join(lines)
 
+    if re.search(r'supplier', t):
+        # Extract product if "supplier ng X"
+        prod_match = re.search(r'supplier ng ([\w\s]+)', t)
+        if prod_match:
+            prod_name = prod_match.group(1).strip()
+            products = api_client_callables['products_list']()
+            matched = [p for p in products if prod_name in p['name'].lower()]
+            if not matched:
+                return f"Walang nahanap na produktong '{prod_name}'."
+            lines = [f"**Supplier ng '{prod_name}':**", ""]
+            for m in matched:
+                lines.append(f"• **{m['name']}**: {m.get('supplier_name') or 'Walang nakalagay na supplier'}")
+            return '\n'.join(lines)
+        else:
+            sups = api_client_callables['suppliers_list']()
+            if not sups:
+                return 'Walang naka-register na suppliers.'
+            lines = [f"**{len(sups)}** Suppliers:", ""]
+            for s in sups[:10]:
+                lines.append(f"• **{s['name']}** (Contact: {s.get('contact_person') or 'N/A'}, {s.get('phone') or 'N/A'})")
+            return '\n'.join(lines)
+
+    # Specific product stock query: "stock ng kalabasa" or "pila ang stock sa mangga"
+    stock_match = re.search(r'(?:stock ng|stock sa|ilan ang|pila ang|ilang)\s+([\w\s]+)', t)
+    if stock_match and not re.search(r'low\s*stock|mababa', t):
+        prod_name = stock_match.group(1).strip().replace('stock', '').strip()
+        if prod_name:
+            all_stocks = api_client_callables['stocks_all']()
+            matched_stocks = [s for s in all_stocks if prod_name in s['product_name'].lower()]
+            if not matched_stocks:
+                return f"Walang stock record para sa '{prod_name}' o baka mali ang spelling."
+            
+            lines = [f"**Stock para sa '{prod_name}':**", ""]
+            total = 0
+            for s in matched_stocks:
+                lines.append(f"• {s['branch_name']}: **{s['quantity']}** units")
+                total += s['quantity']
+            lines.extend(["", f"**Total:** {total} units"])
+            return '\n'.join(lines)
+
     return (
         'Hindi ko sigurado ang tanong. Subukan: **tulong**, **dashboard**, **low stock**, '
-        '**branches**, **products**, **transfers**, o **history**.'
+        '**branches**, **products**, **suppliers**, **transfers**, o **history**.'
     )
 
 

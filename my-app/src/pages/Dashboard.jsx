@@ -328,7 +328,7 @@ export default function Dashboard() {
                 <tr key={a.id} className="hover:bg-slate-50/80 transition-colors group">
                   <td className="py-5 px-8">
                     <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${a.movement_type === 'SALE' ? 'bg-orange-100 text-orange-700' :
-                        a.movement_type === 'RESTOCK' ? 'bg-green-100 text-green-700' :
+                        (a.movement_type === 'IN' || a.movement_type === 'RESTOCK') ? 'bg-green-100 text-green-700' :
                           'bg-blue-100 text-blue-700'
                       }`}>
                       {a.movement_type}

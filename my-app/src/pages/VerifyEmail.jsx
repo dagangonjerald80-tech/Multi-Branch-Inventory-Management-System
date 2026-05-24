@@ -1,50 +1,133 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../api';
 
 export default function VerifyEmail() {
   const [params] = useSearchParams();
-  const [status, setStatus] = useState('working');
-  const [message, setMessage] = useState('Verifying your email…');
+  const [email, setEmail] = useState(params.get('email') || '');
+  const [code, setCode] = useState(params.get('code') || '');
+  const [status, setStatus] = useState('idle');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
+  // Auto-verify if both params are present
   useEffect(() => {
-    const uid = params.get('uid');
-    const token = params.get('token');
-    if (!uid || !token) {
+    if (params.get('email') && params.get('code')) {
+      handleVerify(null, params.get('email'), params.get('code'));
+    }
+  }, []);
+
+  async function handleVerify(e, targetEmail, targetCode) {
+    if (e) e.preventDefault();
+    const finalEmail = (targetEmail || email).trim().toLowerCase();
+    const finalCode = (targetCode || code).trim();
+
+    if (!finalEmail || !finalCode) {
       setStatus('error');
-      setMessage('Invalid link. Use the full URL from your email.');
+      setMessage('Both Email and Code are required.');
       return;
     }
-    api.auth
-      .verifyEmail(uid, token)
-      .then((res) => {
-        setStatus('ok');
-        setMessage(res.detail || 'Email verified.');
-      })
-      .catch((e) => {
-        setStatus('error');
-        setMessage(e.message || 'Verification failed.');
-      });
-  }, [params]);
+
+    setLoading(true);
+    setStatus('working');
+    setMessage('Verifying your account...');
+
+    try {
+      const res = await api.auth.verifyEmail(finalEmail, finalCode);
+      setStatus('ok');
+      setMessage(res.detail || 'Account activated successfully! You can now log in.');
+    } catch (err) {
+      setStatus('error');
+      setMessage(err.message || 'Verification failed. Please check your code.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-800 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white dark:bg-slate-800 p-8 shadow-lg border border-slate-200 dark:border-slate-700 text-center">
-        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">Email verification</h1>
-        <p
-          className={
-            status === 'error'
-              ? 'text-red-700 text-sm mb-6'
-              : status === 'ok'
-                ? 'text-green-700 text-sm mb-6'
-                : 'text-slate-600 dark:text-slate-400 text-sm mb-6'
-          }
-        >
-          {message}
-        </p>
-        <Link to="/login" className="text-blue-600 font-medium hover:underline">
-          Sign in
-        </Link>
+    <div className="auth-page min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden bg-slate-950">
+      {/* Background Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-500/10 blur-[120px] pointer-events-none" />
+
+      <div className="w-full max-w-md glass-card p-10 z-10 border border-white/5 relative">
+        <div className="absolute top-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"></div>
+        
+        <div className="flex justify-center mb-6">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+
+        <h1 className="text-3xl font-black text-white mb-2 text-center tracking-tight">Verify Account</h1>
+        <p className="text-slate-400 text-sm mb-8 text-center font-semibold tracking-wide uppercase">Enter your email and 6-digit code</p>
+
+        {status === 'ok' ? (
+          <div className="text-center space-y-6">
+            <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-5 py-4 text-sm text-emerald-400 font-medium">
+              {message}
+            </div>
+            <Link 
+              to="/login" 
+              className="w-full block rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-500 py-4 font-black text-white shadow-xl shadow-blue-500/20 hover:from-blue-500 hover:to-indigo-400 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            >
+              PROCEED TO LOGIN
+            </Link>
+          </div>
+        ) : (
+          <form onSubmit={handleVerify} className="space-y-6">
+            {status === 'error' && (
+              <div className="rounded-2xl bg-red-500/10 border border-red-500/20 px-5 py-3 text-sm text-red-400 font-medium">
+                {message}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Email Address</label>
+                <input
+                  type="email"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-slate-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 focus:bg-white/10 transition-all outline-none"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider text-center">Verification PIN</label>
+                <input
+                  type="text"
+                  maxLength={6}
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-white text-center text-4xl tracking-[0.5em] font-black font-mono focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 focus:bg-white/10 transition-all outline-none shadow-inner"
+                  placeholder="000000"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                  disabled={loading}
+                  required
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || code.length !== 6 || !email}
+              className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-500 py-4 font-black text-white shadow-xl shadow-blue-500/20 hover:from-blue-500 hover:to-indigo-400 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:transform-none"
+            >
+              {loading ? 'VERIFYING...' : 'ACTIVATE ACCOUNT'}
+            </button>
+
+            <p className="text-center text-sm text-slate-400 font-medium">
+              Didn't get a code?{' '}
+              <Link to="/register" className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
+                Register Again
+              </Link>
+            </p>
+          </form>
+        )}
       </div>
     </div>
   );

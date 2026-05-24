@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
 
 export default function Stock() {
@@ -11,10 +11,11 @@ export default function Stock() {
   const [action, setAction] = useState(null);
   const [form, setForm] = useState({ branch_id: '', product_id: '', quantity: '' });
 
-  const load = () =>
+  const load = useCallback(() => {
     api.stocks.list(branchFilter || null)
       .then(setStocks)
       .catch((e) => setError(e.message));
+  }, [branchFilter]);
 
   useEffect(() => {
     Promise.all([
@@ -25,7 +26,7 @@ export default function Stock() {
 
   useEffect(() => {
     load();
-  }, [branchFilter]);
+  }, [load]);
 
   const [fieldErrors, setFieldErrors] = useState({});
 

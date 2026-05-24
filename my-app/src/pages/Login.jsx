@@ -258,11 +258,19 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-sm text-slate-400 font-medium">
-            No account?{' '}
-            <Link className="font-bold text-blue-400 hover:text-blue-300 transition-colors" to="/register">
-              Register
-            </Link>
+          <p className="mt-8 text-center text-sm text-slate-400 font-medium space-y-2">
+            <div>
+              No account?{' '}
+              <Link className="font-bold text-blue-400 hover:text-blue-300 transition-colors" to="/register">
+                Register
+              </Link>
+            </div>
+            <div>
+              Already have a code?{' '}
+              <Link className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors" to="/verify-email">
+                Verify Account
+              </Link>
+            </div>
           </p>
         </div>
       </div>

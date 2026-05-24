@@ -106,6 +106,7 @@ class UserSerializer(serializers.ModelSerializer):
             'branch_id',
             'branch_name',
             'is_email_verified',
+            'is_active',
             'avatar_url',
             'bio',
         ]

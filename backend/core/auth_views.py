@@ -49,6 +49,8 @@ def register(request):
     serializer = RegisterSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
+    user.is_active = False
+    user.save(update_fields=['is_active'])
     _send_verification_email(user)
     return Response(
         {'detail': 'Registration successful. Enter the code sent to your email.'},
@@ -79,6 +81,9 @@ def verify_email(request):
     user.profile.is_email_verified = True
     user.profile.email_verification_code = None
     user.profile.save(update_fields=['is_email_verified', 'email_verification_code'])
+    
+    user.is_active = True
+    user.save(update_fields=['is_active'])
     
     return Response({'detail': 'Email verified. You can use the full application.'})
 

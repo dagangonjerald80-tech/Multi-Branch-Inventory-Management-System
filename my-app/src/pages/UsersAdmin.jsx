@@ -198,6 +198,7 @@ export default function UsersAdmin() {
               <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Role</th>
               <th className="px-4 py-2">Verified</th>
+              <th className="px-4 py-2">Active</th>
               <th className="px-4 py-2 text-right">Actions</th>
             </tr>
           </thead>
@@ -214,7 +215,16 @@ export default function UsersAdmin() {
                 </td>
                 <td className="px-4 py-2">{u.email}</td>
                 <td className="px-4 py-2">{u.role}</td>
-                <td className="px-4 py-2">{u.is_email_verified ? 'Yes' : 'No'}</td>
+                <td className="px-4 py-2">
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${u.is_email_verified ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
+                    {u.is_email_verified ? 'Yes' : 'No'}
+                  </span>
+                </td>
+                <td className="px-4 py-2">
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${u.is_active ? 'bg-blue-500/10 text-blue-400' : 'bg-slate-500/10 text-slate-400'}`}>
+                    {u.is_active ? 'Yes' : 'No'}
+                  </span>
+                </td>
                 <td className="px-4 py-2 text-right">
                   <button onClick={() => handleEdit(u)} className="mr-2 text-blue-600 hover:underline">Edit</button>
                   <button onClick={() => handleDelete(u.id)} className="text-red-600 hover:underline">Delete</button>

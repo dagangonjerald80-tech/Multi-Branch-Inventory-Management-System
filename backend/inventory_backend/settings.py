@@ -30,12 +30,16 @@ load_dotenv(BASE_DIR / '.env')
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z_=tac^30_ebw@(xjjs1qn9!j9rp!==8l3i#4gntm!fq6b_9-w'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-z_=tac^30_ebw@(xjjs1qn9!j9rp!==8l3i#4gntm!fq6b_9-w')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+# Accepts comma-separated hosts: e.g. "157.230.123.45,yourdomain.com"
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '*').split(',')]
+if not DEBUG:
+    ALLOWED_HOSTS += ['.onrender.com', '127.0.0.1', 'localhost']
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -168,4 +172,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS Config
-CORS_ALLOW_ALL_ORIGINS = True
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "https://multi-branch-inventory-management-s-gamma.vercel.app",
+    ]
+    # Add any extra hosts from environment variables
+    env_hosts = os.environ.get('ALLOWED_HOSTS', '').split(',')
+    for host in env_hosts:
+        if host.strip():
+            CORS_ALLOWED_ORIGINS.append(f"https://{host.strip()}")
+            CORS_ALLOWED_ORIGINS.append(f"http://{host.strip()}")

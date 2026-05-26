@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../api';
 
@@ -10,14 +10,7 @@ export default function VerifyEmail() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Auto-verify if both params are present
-  useEffect(() => {
-    if (params.get('email') && params.get('code')) {
-      handleVerify(null, params.get('email'), params.get('code'));
-    }
-  }, []);
-
-  async function handleVerify(e, targetEmail, targetCode) {
+  const handleVerify = useCallback(async (e, targetEmail, targetCode) => {
     if (e) e.preventDefault();
     const finalEmail = (targetEmail || email).trim().toLowerCase();
     const finalCode = (targetCode || code).trim();
@@ -42,7 +35,16 @@ export default function VerifyEmail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [email, code]);
+
+  // Auto-verify if both params are present
+  useEffect(() => {
+    const e = params.get('email');
+    const c = params.get('code');
+    if (e && c) {
+      handleVerify(null, e, c);
+    }
+  }, [params, handleVerify]);
 
   return (
     <div className="auth-page min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden bg-slate-950">

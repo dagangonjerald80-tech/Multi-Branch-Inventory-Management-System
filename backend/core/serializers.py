@@ -112,10 +112,7 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
     def get_avatar_url(self, obj):
-        try:
-            avatar = obj.profile.avatar
-        except Exception:
-            avatar = None
+        avatar = getattr(obj.profile, 'avatar', None)
         if not avatar:
             return None
         request = self.context.get('request')
@@ -156,10 +153,7 @@ class UserMeSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'username', 'role', 'branch_name', 'is_email_verified']
 
     def get_avatar_url(self, obj):
-        try:
-            avatar = obj.profile.avatar
-        except Exception:
-            avatar = None
+        avatar = getattr(obj.profile, 'avatar', None)
         if not avatar:
             return None
         request = self.context.get('request')
@@ -168,10 +162,7 @@ class UserMeSerializer(serializers.ModelSerializer):
         return avatar.url
 
     def get_cover_photo_url(self, obj):
-        try:
-            cover = obj.profile.cover_photo
-        except Exception:
-            cover = None
+        cover = getattr(obj.profile, 'cover_photo', None)
         if not cover:
             return None
         request = self.context.get('request')
@@ -210,22 +201,24 @@ class UserMeSerializer(serializers.ModelSerializer):
         elif 'bio' in validated_data:
             bio = validated_data.pop('bio')
 
+        profile, _ = Profile.objects.get_or_create(user=instance)
+
         new_email = validated_data.get('email')
         if new_email and new_email.lower() != (instance.email or '').lower():
-            instance.profile.is_email_verified = False
-            instance.profile.save(update_fields=['is_email_verified'])
+            profile.is_email_verified = False
+            profile.save(update_fields=['is_email_verified'])
         
         user = super().update(instance, validated_data)
         
         if avatar is not None:
-            user.profile.avatar = avatar
+            profile.avatar = avatar
         if cover_photo is not None:
-            user.profile.cover_photo = cover_photo
+            profile.cover_photo = cover_photo
         if bio is not None:
-            user.profile.bio = bio
+            profile.bio = bio
             
         if avatar is not None or cover_photo is not None or bio is not None:
-            user.profile.save()
+            profile.save()
             
         return user
 
@@ -296,11 +289,12 @@ class AdminManageUserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'password': 'Password is required when creating a user.'})
         is_staff = validated_data.pop('is_staff', False)
         user = User.objects.create_user(password=password, **validated_data)
-        user.profile.branch = branch
-        user.profile.role = role
+        profile, _ = Profile.objects.get_or_create(user=user)
+        profile.branch = branch
+        profile.role = role
         if role in ('ADMIN', 'STAFF'):
-            user.profile.is_email_verified = True
-        user.profile.save()
+            profile.is_email_verified = True
+        profile.save()
         user.is_staff = bool(is_staff) or role in ('ADMIN', 'STAFF')
         user.save(update_fields=['is_staff'])
         return user
@@ -310,26 +304,12 @@ class AdminManageUserSerializer(serializers.ModelSerializer):
         branch = validated_data.pop('branch', serializers.empty)
         password = validated_data.pop('password', serializers.empty)
         user = super().update(instance, validated_data)
-        
-        try:
-            profile = user.profile
-        except Exception:
-            profile = Profile(user=user)
-            if user.is_superuser:
-                profile.role = 'ADMIN'
-                profile.is_email_verified = True
-            elif user.is_staff:
-                profile.role = 'STAFF'
-                profile.is_email_verified = True
-            else:
-                profile.role = 'USER'
-                profile.is_email_verified = False
-
+        profile, _ = Profile.objects.get_or_create(user=user)
         if branch is not serializers.empty:
             profile.branch = branch
         if role is not serializers.empty:
             profile.role = role
-            user.is_staff = role in ('ADMIN', 'STAFF')
+            user.is_staff = (role in ('ADMIN', 'STAFF'))
             user.save(update_fields=['is_staff'])
         if password is not serializers.empty:
             user.set_password(password)

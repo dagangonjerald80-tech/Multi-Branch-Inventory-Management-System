@@ -18,6 +18,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers import RegisterSerializer, UserMeSerializer
 from .tokens import email_verification_token
+from .models import Profile
 
 
 def _fresh_email_credentials():
@@ -44,8 +45,9 @@ def _get_fresh_email_connection():
 
 def _send_verification_email(user):
     code = f"{random.randint(100000, 999999)}"
-    user.profile.email_verification_code = code
-    user.profile.save(update_fields=['email_verification_code'])
+    profile, _ = Profile.objects.get_or_create(user=user)
+    profile.email_verification_code = code
+    profile.save(update_fields=['email_verification_code'])
     
     # Print code as a fallback in server logs (useful when Render SMTP is blocked)
     print(f"[Verification Code Alert] User: {user.username}, Email: {user.email}, Code: {code}")
@@ -161,15 +163,16 @@ def verify_email(request):
     except User.DoesNotExist:
         return Response({'detail': 'Invalid email or code.'}, status=status.HTTP_400_BAD_REQUEST)
         
-    if user.profile.is_email_verified:
+    profile, _ = Profile.objects.get_or_create(user=user)
+    if profile.is_email_verified:
         return Response({'detail': 'Email already verified.'})
         
-    if user.profile.email_verification_code != code:
+    if profile.email_verification_code != code:
         return Response({'detail': 'Invalid or expired code.'}, status=status.HTTP_400_BAD_REQUEST)
         
-    user.profile.is_email_verified = True
-    user.profile.email_verification_code = None
-    user.profile.save(update_fields=['is_email_verified', 'email_verification_code'])
+    profile.is_email_verified = True
+    profile.email_verification_code = None
+    profile.save(update_fields=['is_email_verified', 'email_verification_code'])
     
     user.is_active = True
     user.save(update_fields=['is_active'])
@@ -181,7 +184,8 @@ def verify_email(request):
 @permission_classes([IsAuthenticated])
 def change_email(request):
     user = request.user
-    if user.profile.is_email_verified:
+    profile, _ = Profile.objects.get_or_create(user=user)
+    if profile.is_email_verified:
         return Response({'detail': 'Already verified.'}, status=status.HTTP_400_BAD_REQUEST)
         
     new_email = (request.data.get('email') or '').strip().lower()
@@ -231,7 +235,8 @@ def resend_verification(request):
         user = User.objects.get(email__iexact=email)
     except User.DoesNotExist:
         return Response({'detail': 'If an account exists for this email, a verification message was sent.'})
-    if user.profile.is_email_verified:
+    profile, _ = Profile.objects.get_or_create(user=user)
+    if profile.is_email_verified:
         return Response({'detail': 'This account is already verified.'})
     result = _safe_send_verification_email(user)
     payload = {'detail': 'If an account exists for this email, a verification message was sent.'}
@@ -248,8 +253,9 @@ class EmailAwareTokenSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['role'] = user.profile.role
-        token['email_verified'] = user.profile.is_email_verified
+        profile, _ = Profile.objects.get_or_create(user=user)
+        token['role'] = profile.role
+        token['email_verified'] = profile.is_email_verified
         return token
 
     def validate(self, attrs):

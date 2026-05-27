@@ -322,14 +322,10 @@ class UserViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             return User.objects.none()
         qs = User.objects.select_related('profile').all().order_by('id')
-        if user.is_superuser:
+        profile = getattr(user, 'profile', None)
+        role = profile.role if profile else None
+        if role == 'ADMIN' or user.is_superuser:
             return qs
-        try:
-            role = user.profile.role
-            if role == 'ADMIN':
-                return qs
-        except Exception:
-            pass
         return qs.filter(pk=user.pk)
 
     def get_serializer_context(self):

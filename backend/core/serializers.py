@@ -112,7 +112,10 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
     def get_avatar_url(self, obj):
-        avatar = getattr(obj.profile, 'avatar', None)
+        try:
+            avatar = obj.profile.avatar
+        except Exception:
+            avatar = None
         if not avatar:
             return None
         request = self.context.get('request')
@@ -153,7 +156,10 @@ class UserMeSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'username', 'role', 'branch_name', 'is_email_verified']
 
     def get_avatar_url(self, obj):
-        avatar = getattr(obj.profile, 'avatar', None)
+        try:
+            avatar = obj.profile.avatar
+        except Exception:
+            avatar = None
         if not avatar:
             return None
         request = self.context.get('request')
@@ -162,7 +168,10 @@ class UserMeSerializer(serializers.ModelSerializer):
         return avatar.url
 
     def get_cover_photo_url(self, obj):
-        cover = getattr(obj.profile, 'cover_photo', None)
+        try:
+            cover = obj.profile.cover_photo
+        except Exception:
+            cover = None
         if not cover:
             return None
         request = self.context.get('request')
@@ -301,14 +310,31 @@ class AdminManageUserSerializer(serializers.ModelSerializer):
         branch = validated_data.pop('branch', serializers.empty)
         password = validated_data.pop('password', serializers.empty)
         user = super().update(instance, validated_data)
+        
+        try:
+            profile = user.profile
+        except Exception:
+            profile = Profile(user=user)
+            if user.is_superuser:
+                profile.role = 'ADMIN'
+                profile.is_email_verified = True
+            elif user.is_staff:
+                profile.role = 'STAFF'
+                profile.is_email_verified = True
+            else:
+                profile.role = 'USER'
+                profile.is_email_verified = False
+
         if branch is not serializers.empty:
-            user.profile.branch = branch
+            profile.branch = branch
         if role is not serializers.empty:
-            user.profile.role = role
+            profile.role = role
+            user.is_staff = role in ('ADMIN', 'STAFF')
+            user.save(update_fields=['is_staff'])
         if password is not serializers.empty:
             user.set_password(password)
             user.save(update_fields=['password'])
-        user.profile.save()
+        profile.save()
         return user
 
 

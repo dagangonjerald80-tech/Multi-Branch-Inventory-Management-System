@@ -56,6 +56,37 @@ def _send_verification_email(user):
         f'Your verification code is: {code}\n\n'
         'Please enter this code in the app to verify your account.'
     )
+    # Load fresh env variables
+    _fresh_email_credentials()
+    resend_api_key = os.environ.get('RESEND_API_KEY', '').strip()
+    
+    if resend_api_key:
+        import urllib.request
+        import json
+        
+        from_email = os.environ.get('RESEND_FROM_EMAIL', 'onboarding@resend.dev').strip()
+        url = "https://api.resend.com/emails"
+        headers = {
+            "Authorization": f"Bearer {resend_api_key}",
+            "Content-Type": "application/json",
+        }
+        data = {
+            "from": f"Multi-Branch Inventory <{from_email}>",
+            "to": [user.email],
+            "subject": subject,
+            "html": f"<p>Hi {user.first_name or user.username},</p><p>Your verification code is: <strong>{code}</strong></p><p>Please enter this code in the app to verify your account.</p>"
+        }
+        
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(data).encode("utf-8"),
+            headers=headers,
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=10) as response:
+            print(f"[Resend Email Success] Code: {response.getcode()}, Body: {response.read().decode('utf-8')}")
+        return {"sent": True, "code": code}
+
     creds = _fresh_email_credentials()
     from_email = (
         f'"Multi-Branch Inventory Management System" <{creds["username"]}>'

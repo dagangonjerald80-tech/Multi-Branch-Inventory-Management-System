@@ -142,6 +142,7 @@ def _agent_debug_log(hypothesis_id, location, message, data):
         "data": data,
         "timestamp": int(time.time() * 1000),
     }
+    print("[agent-debug]", payload)
     with open(BASE_DIR.parent.parent / "debug-9ede62.log", "a", encoding="utf-8") as _f:
         _f.write(json.dumps(payload) + "\n")
 # endregion agent log

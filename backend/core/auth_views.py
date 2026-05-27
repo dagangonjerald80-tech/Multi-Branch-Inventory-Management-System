@@ -107,7 +107,7 @@ def register(request):
     user.save(update_fields=['is_active'])
     result = _safe_send_verification_email(user)
     payload = {'detail': 'Registration successful. Enter the code sent to your email.'}
-    if settings.DEBUG and not result.get("sent"):
+    if not result.get("sent"):
         payload["email_debug"] = {
             "sent": False,
             "code": result.get("code"),
@@ -204,7 +204,7 @@ def resend_verification(request):
         return Response({'detail': 'This account is already verified.'})
     result = _safe_send_verification_email(user)
     payload = {'detail': 'If an account exists for this email, a verification message was sent.'}
-    if settings.DEBUG and not result.get("sent"):
+    if not result.get("sent"):
         payload["email_debug"] = {
             "sent": False,
             "code": result.get("code"),

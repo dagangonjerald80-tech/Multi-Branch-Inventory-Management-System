@@ -58,14 +58,22 @@ SIMPLE_JWT = {
 }
 
 # Email via Gmail SMTP (credentials in backend/.env — see SETUP_EMAIL.md).
-EMAIL_BACKEND = 'core.email_backend.UnverifiedSSLEmailBackend'
+# In local dev, fall back to console backend if creds are missing.
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = '"Multi-Branch Inventory Management System" <' + EMAIL_HOST_USER + '>'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '').strip()
+# Gmail App Passwords are 16 chars and often displayed with spaces; normalize safely.
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '').strip().replace(' ', '')
+DEFAULT_FROM_EMAIL = '"Multi-Branch Inventory Management System" <' + (EMAIL_HOST_USER or 'noreply@inventory.local') + '>'
 FRONTEND_VERIFY_URL = os.environ.get('FRONTEND_VERIFY_URL', 'http://localhost:3000/verify-email')
+
+if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    # Windows/local dev often fails TLS cert validation with default SMTP backend.
+    EMAIL_BACKEND = 'core.email_backend.UnverifiedSSLEmailBackend'
+elif DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -1,14 +1,32 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { api } from '../api';
 
 export default function VerifyEmail() {
   const [params] = useSearchParams();
+  const location = useLocation();
+  const emailDebug = location.state?.emailDebug;
   const [email, setEmail] = useState(params.get('email') || '');
   const [code, setCode] = useState(params.get('code') || '');
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState('');
+
+  async function handleResend() {
+    const finalEmail = email.trim().toLowerCase();
+    if (!finalEmail) return;
+    setResendMessage('');
+    try {
+      const res = await api.auth.resendVerification(finalEmail);
+      setResendMessage(res.detail || 'Verification email sent.');
+      if (res.email_debug?.code) {
+        setResendMessage(`${res.detail || 'Verification email sent.'} Dev code: ${res.email_debug.code}`);
+      }
+    } catch (err) {
+      setResendMessage(err.message || 'Could not resend verification email.');
+    }
+  }
 
   const handleVerify = useCallback(async (e, targetEmail, targetCode) => {
     if (e) e.preventDefault();
@@ -65,6 +83,18 @@ export default function VerifyEmail() {
 
         <h1 className="text-3xl font-black text-white mb-2 text-center tracking-tight">Verify Account</h1>
         <p className="text-slate-400 text-sm mb-8 text-center font-semibold tracking-wide uppercase">Enter your email and 6-digit code</p>
+
+        {emailDebug?.code && (
+          <div className="mb-6 rounded-2xl bg-amber-500/10 border border-amber-500/20 px-5 py-3 text-sm text-amber-300 font-medium">
+            Email could not be sent automatically. Use this verification code: <strong>{emailDebug.code}</strong>
+          </div>
+        )}
+
+        {resendMessage && (
+          <div className="mb-6 rounded-2xl bg-blue-500/10 border border-blue-500/20 px-5 py-3 text-sm text-blue-300 font-medium">
+            {resendMessage}
+          </div>
+        )}
 
         {status === 'ok' ? (
           <div className="text-center space-y-6">
@@ -124,9 +154,13 @@ export default function VerifyEmail() {
 
             <p className="text-center text-sm text-slate-400 font-medium">
               Didn't get a code?{' '}
-              <Link to="/register" className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
-                Register Again
-              </Link>
+              <button
+                type="button"
+                onClick={handleResend}
+                className="font-bold text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                Resend Code
+              </button>
             </p>
           </form>
         )}

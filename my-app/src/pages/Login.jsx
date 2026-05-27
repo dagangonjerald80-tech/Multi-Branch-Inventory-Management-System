@@ -29,7 +29,12 @@ export default function Login() {
       }
       navigate('/', { replace: true });
     } catch (err) {
-      setError(err.message || 'Login failed.');
+      const msg = err.message || 'Login failed.';
+      if (msg.toLowerCase().includes('not verified')) {
+        setError(`${msg} Open Verify Account to enter your code.`);
+      } else {
+        setError(msg);
+      }
     }
   }
 

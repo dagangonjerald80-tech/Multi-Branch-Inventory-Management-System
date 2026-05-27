@@ -1,8 +1,14 @@
+import os
+import random
+from pathlib import Path
+
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage, get_connection
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from dotenv import load_dotenv
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -14,26 +20,70 @@ from .serializers import RegisterSerializer, UserMeSerializer
 from .tokens import email_verification_token
 
 
-import random
+def _fresh_email_credentials():
+    load_dotenv(Path(settings.BASE_DIR) / '.env', override=True)
+    return {
+        'username': os.environ.get('EMAIL_HOST_USER', '').strip(),
+        'password': os.environ.get('EMAIL_HOST_PASSWORD', '').strip().replace(' ', ''),
+    }
+
+
+def _get_fresh_email_connection():
+    creds = _fresh_email_credentials()
+    return get_connection(
+        backend=settings.EMAIL_BACKEND,
+        host=settings.EMAIL_HOST,
+        port=settings.EMAIL_PORT,
+        username=creds['username'],
+        password=creds['password'],
+        use_tls=settings.EMAIL_USE_TLS,
+        fail_silently=False,
+    )
+
 
 def _send_verification_email(user):
     code = f"{random.randint(100000, 999999)}"
     user.profile.email_verification_code = code
     user.profile.save(update_fields=['email_verification_code'])
-    
+
     subject = f'Your Verification Code: {code}'
     body = (
         f'Hi {user.first_name or user.username},\n\n'
         f'Your verification code is: {code}\n\n'
         'Please enter this code in the app to verify your account.'
     )
-    send_mail(
-        subject,
-        body,
-        getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@inventory.local'),
-        [user.email],
-        fail_silently=not settings.DEBUG,
+    creds = _fresh_email_credentials()
+    from_email = (
+        f'"Multi-Branch Inventory Management System" <{creds["username"]}>'
+        if creds['username']
+        else getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@inventory.local')
     )
+    message = EmailMessage(
+        subject=subject,
+        body=body,
+        from_email=from_email,
+        to=[user.email],
+        connection=_get_fresh_email_connection(),
+    )
+    message.send(fail_silently=False)
+    return {"sent": True, "code": code}
+
+
+def _safe_send_verification_email(user):
+    """
+    Dev-friendly wrapper: never raises on email issues.
+    Returns dict with whether email was sent and the generated code.
+    """
+    try:
+        return _send_verification_email(user)
+    except Exception as e:
+        # Email credentials/network are commonly missing in local dev.
+        # Keep registration working; expose the code in DEBUG so the UI can proceed.
+        return {
+            "sent": False,
+            "code": getattr(getattr(user, "profile", None), "email_verification_code", None),
+            "error": str(e),
+        }
 
 
 @api_view(['POST'])
@@ -51,11 +101,15 @@ def register(request):
     user = serializer.save()
     user.is_active = False
     user.save(update_fields=['is_active'])
-    _send_verification_email(user)
-    return Response(
-        {'detail': 'Registration successful. Enter the code sent to your email.'},
-        status=status.HTTP_201_CREATED,
-    )
+    result = _safe_send_verification_email(user)
+    payload = {'detail': 'Registration successful. Enter the code sent to your email.'}
+    if settings.DEBUG and not result.get("sent"):
+        payload["email_debug"] = {
+            "sent": False,
+            "code": result.get("code"),
+            "error": result.get("error"),
+        }
+    return Response(payload, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
@@ -144,8 +198,15 @@ def resend_verification(request):
         return Response({'detail': 'If an account exists for this email, a verification message was sent.'})
     if user.profile.is_email_verified:
         return Response({'detail': 'This account is already verified.'})
-    _send_verification_email(user)
-    return Response({'detail': 'If an account exists for this email, a verification message was sent.'})
+    result = _safe_send_verification_email(user)
+    payload = {'detail': 'If an account exists for this email, a verification message was sent.'}
+    if settings.DEBUG and not result.get("sent"):
+        payload["email_debug"] = {
+            "sent": False,
+            "code": result.get("code"),
+            "error": result.get("error"),
+        }
+    return Response(payload)
 
 
 class EmailAwareTokenSerializer(TokenObtainPairSerializer):
@@ -157,6 +218,18 @@ class EmailAwareTokenSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):
+        username = attrs.get(self.username_field)
+        password = attrs.get('password')
+        if username and password:
+            try:
+                user = User.objects.get(**{self.username_field: username})
+                if not user.is_active and user.check_password(password):
+                    raise AuthenticationFailed(
+                        'Your account is not verified yet. Check your email for the 6-digit code, or open Verify Account to enter it.'
+                    )
+            except User.DoesNotExist:
+                pass
+
         data = super().validate(attrs)
         user = self.user
         data['user'] = UserMeSerializer(user).data

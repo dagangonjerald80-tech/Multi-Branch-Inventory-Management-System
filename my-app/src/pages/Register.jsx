@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
   const { register } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     username: '',
     email: 'dagangonjerald80@gmail.com',
@@ -13,7 +14,6 @@ export default function Register() {
     password_confirm: '',
   });
   const [error, setError] = useState('');
-  const [done, setDone] = useState(false);
 
   function handleChange(e) {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -43,7 +43,7 @@ export default function Register() {
       return;
     }
     try {
-      await register({
+      const response = await register({
         username: form.username.trim(),
         email: form.email.trim().toLowerCase(),
         first_name: form.first_name.trim(),
@@ -51,36 +51,14 @@ export default function Register() {
         password: form.password,
         password_confirm: form.password_confirm,
       });
-      setDone(true);
+      navigate(`/verify-email?email=${encodeURIComponent(form.email.trim().toLowerCase())}`, {
+        replace: true,
+        state: { emailDebug: response?.email_debug },
+      });
+      return;
     } catch (err) {
       setError(err.message || 'Registration failed.');
     }
-  }
-
-  if (done) {
-    return (
-      <div className="auth-page min-h-screen flex items-center justify-center px-4 py-12">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none animate-pulse-slow" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-500/10 blur-[120px] pointer-events-none animate-pulse-slow" />
-
-        <div className="w-full max-w-md glass-card p-10 z-10 border border-white/5 relative text-center">
-          <div className="flex justify-center mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 19v-8.93a2 2 0 01.89-1.664l8-5.333a2 2 0 012.22 0l8 5.333A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-2.25-1.5a2 2 0 00-2.5 0l-2.25 1.5" />
-              </svg>
-            </div>
-          </div>
-          <h1 className="text-2xl font-black text-white mb-2">Check your email</h1>
-          <p className="text-slate-300 text-sm mb-6 leading-relaxed">
-            We sent a verification code to your email. After verifying, you can sign in and access the dashboard.
-          </p>
-          <Link to="/login" className="inline-block px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-all shadow-md">
-            Back to Sign In
-          </Link>
-        </div>
-      </div>
-    );
   }
 
   return (

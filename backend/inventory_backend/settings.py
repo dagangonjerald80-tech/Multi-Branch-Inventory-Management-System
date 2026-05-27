@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 import ssl
+import urllib.parse
 from datetime import timedelta
 from pathlib import Path
 
@@ -127,6 +128,24 @@ WSGI_APPLICATION = 'inventory_backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+
+# region agent log
+try:
+    _db_url_raw = os.environ.get('DATABASE_URL', '')
+    _db_url = _db_url_raw.strip()
+    _db_parsed = urllib.parse.urlparse(_db_url) if _db_url else None
+    print(
+        "[agent-debug][db-url]",
+        {
+            "hasValue": bool(_db_url),
+            "startsWith": (_db_url[:12] if _db_url else ""),
+            "scheme": (_db_parsed.scheme if _db_parsed else ""),
+            "hasNetloc": bool(_db_parsed.netloc) if _db_parsed else False,
+        },
+    )
+except Exception as _e:
+    print("[agent-debug][db-url][error]", type(_e).__name__)
+# endregion agent log
 
 DATABASES = {
     'default': dj_database_url.config(

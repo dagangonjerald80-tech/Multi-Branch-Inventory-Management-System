@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 import ssl
+import json
+import time
 import urllib.parse
 from datetime import timedelta
 from pathlib import Path
@@ -130,21 +132,48 @@ WSGI_APPLICATION = 'inventory_backend.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 # region agent log
-try:
-    _db_url_raw = os.environ.get('DATABASE_URL', '')
-    _db_url = _db_url_raw.strip()
-    _db_parsed = urllib.parse.urlparse(_db_url) if _db_url else None
-    print(
-        "[agent-debug][db-url]",
-        {
-            "hasValue": bool(_db_url),
-            "startsWith": (_db_url[:12] if _db_url else ""),
-            "scheme": (_db_parsed.scheme if _db_parsed else ""),
-            "hasNetloc": bool(_db_parsed.netloc) if _db_parsed else False,
-        },
-    )
-except Exception as _e:
-    print("[agent-debug][db-url][error]", type(_e).__name__)
+def _agent_debug_log(hypothesis_id, location, message, data):
+    payload = {
+        "sessionId": "9ede62",
+        "runId": "render-dburl-debug",
+        "hypothesisId": hypothesis_id,
+        "location": location,
+        "message": message,
+        "data": data,
+        "timestamp": int(time.time() * 1000),
+    }
+    with open(BASE_DIR.parent / "debug-9ede62.log", "a", encoding="utf-8") as _f:
+        _f.write(json.dumps(payload) + "\n")
+# endregion agent log
+
+# region agent log
+_db_url_raw = os.environ.get('DATABASE_URL', '')
+_db_url = _db_url_raw.strip()
+_agent_debug_log(
+    "H1",
+    "inventory_backend/settings.py:db_env_read",
+    "Read DATABASE_URL from environment",
+    {
+        "hasValue": bool(_db_url),
+        "rawLen": len(_db_url_raw),
+        "trimmedLen": len(_db_url),
+        "startsWith": (_db_url[:18] if _db_url else ""),
+    },
+)
+# endregion agent log
+
+# region agent log
+_db_parsed = urllib.parse.urlparse(_db_url) if _db_url else None
+_agent_debug_log(
+    "H2",
+    "inventory_backend/settings.py:db_url_parse",
+    "Parsed DATABASE_URL components",
+    {
+        "scheme": (_db_parsed.scheme if _db_parsed else ""),
+        "hasNetloc": bool(_db_parsed.netloc) if _db_parsed else False,
+        "pathStartsWithSlash": (_db_parsed.path.startswith("/") if _db_parsed else False),
+    },
+)
 # endregion agent log
 
 DATABASES = {

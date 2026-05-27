@@ -29,16 +29,26 @@ def make_admin(request):
     email = 'dagangonjerald80@gmail.com'
     password = 'admin12345'  # Pwede nimo ilisan kini sa imong gusto nga password pagkahuman
     
+    from core.models import Profile
+    
     if not User.objects.filter(username=username).exists():
-        User.objects.create_superuser(username, email, password)
-        return HttpResponse(f"Superuser '{username}' successfully created with password '{password}'!")
+        u = User.objects.create_superuser(username, email, password)
+        profile, _ = Profile.objects.get_or_create(user=u)
+        profile.role = 'ADMIN'
+        profile.is_email_verified = True
+        profile.save()
+        return HttpResponse(f"Superuser '{username}' successfully created with profile and password '{password}'!")
     else:
         u = User.objects.get(username=username)
         u.set_password(password)
         u.is_superuser = True
         u.is_staff = True
         u.save()
-        return HttpResponse(f"Superuser '{username}' already exists. Password reset to '{password}'.")
+        profile, _ = Profile.objects.get_or_create(user=u)
+        profile.role = 'ADMIN'
+        profile.is_email_verified = True
+        profile.save()
+        return HttpResponse(f"Superuser '{username}' already exists. Profile ensured and password reset to '{password}'.")
 
 urlpatterns = [
     path('', RedirectView.as_view(url='api/', permanent=False)),

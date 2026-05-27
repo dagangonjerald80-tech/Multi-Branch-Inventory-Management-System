@@ -233,7 +233,7 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOWED_ORIGINS = [
-        "https://multi-branch-inventory-management-s-gamma.vercel.app",
+        "https://multi-branch-inventory-management-system-frontend.onrender.com",
     ]
     # Add any extra hosts from environment variables
     env_hosts = os.environ.get('ALLOWED_HOSTS', '').split(',')

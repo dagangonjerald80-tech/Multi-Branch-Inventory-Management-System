@@ -20,10 +20,31 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
 
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+
+def make_admin(request):
+    User = get_user_model()
+    username = 'admin'
+    email = 'dagangonjerald80@gmail.com'
+    password = 'admin12345'  # Pwede nimo ilisan kini sa imong gusto nga password pagkahuman
+    
+    if not User.objects.filter(username=username).exists():
+        User.objects.create_superuser(username, email, password)
+        return HttpResponse(f"Superuser '{username}' successfully created with password '{password}'!")
+    else:
+        u = User.objects.get(username=username)
+        u.set_password(password)
+        u.is_superuser = True
+        u.is_staff = True
+        u.save()
+        return HttpResponse(f"Superuser '{username}' already exists. Password reset to '{password}'.")
+
 urlpatterns = [
     path('', RedirectView.as_view(url='api/', permanent=False)),
     path('admin/', admin.site.urls),
     path('api/', include('core.urls')),
+    path('make-admin-temporary-route-77/', make_admin),
 ]
 
 if settings.DEBUG:

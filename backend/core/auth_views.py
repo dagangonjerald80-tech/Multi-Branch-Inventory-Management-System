@@ -38,6 +38,7 @@ def _get_fresh_email_connection():
         password=creds['password'],
         use_tls=settings.EMAIL_USE_TLS,
         fail_silently=False,
+        timeout=5,
     )
 
 
@@ -45,6 +46,9 @@ def _send_verification_email(user):
     code = f"{random.randint(100000, 999999)}"
     user.profile.email_verification_code = code
     user.profile.save(update_fields=['email_verification_code'])
+    
+    # Print code as a fallback in server logs (useful when Render SMTP is blocked)
+    print(f"[Verification Code Alert] User: {user.username}, Email: {user.email}, Code: {code}")
 
     subject = f'Your Verification Code: {code}'
     body = (

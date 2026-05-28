@@ -10,6 +10,7 @@ export default function UserDetail() {
   const isAdmin = useIsAdmin();
   const [user, setUser] = useState(null);
   const [error, setError] = useState('');
+  const [zoomedImage, setZoomedImage] = useState(null);
 
   const blocked = Boolean(!isAdmin && me && String(me.id) !== String(id));
 
@@ -68,7 +69,12 @@ export default function UserDetail() {
       <div className="max-w-lg rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow">
         <div className="flex items-center gap-4 mb-6">
           {user.avatar_url ? (
-            <img src={getImageUrl(user.avatar_url)} alt="" className="h-16 w-16 rounded-full object-cover border" />
+            <img 
+              src={getImageUrl(user.avatar_url)} 
+              alt="" 
+              className="h-16 w-16 rounded-full object-cover border cursor-zoom-in hover:opacity-80 transition-opacity" 
+              onClick={() => setZoomedImage(getImageUrl(user.avatar_url))}
+            />
           ) : (
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 text-lg font-semibold text-slate-600 dark:text-slate-400">
               {(user.first_name?.[0] || user.username?.[0] || '?').toUpperCase()}
@@ -109,6 +115,30 @@ export default function UserDetail() {
           </p>
         )}
       </div>
+
+      {/* Image Zoom Overlay */}
+      {zoomedImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/90 backdrop-blur-sm p-4 animate-in fade-in duration-300"
+          onClick={() => setZoomedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full flex items-center justify-center">
+            <button 
+              className="absolute -top-12 right-0 text-white hover:text-slate-300 transition-colors"
+              onClick={() => setZoomedImage(null)}
+            >
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <img 
+              src={zoomedImage} 
+              alt="Zoomed" 
+              className="max-w-full max-h-[90vh] rounded-2xl shadow-2xl animate-in zoom-in-95 duration-300 object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

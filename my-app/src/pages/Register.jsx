@@ -53,7 +53,6 @@ export default function Register() {
       });
       navigate(`/verify-email?email=${encodeURIComponent(form.email.trim().toLowerCase())}`, {
         replace: true,
-        state: { emailDebug: response?.email_debug },
       });
       return;
     } catch (err) {

@@ -63,30 +63,25 @@ def _send_verification_email(user):
     resend_api_key = os.environ.get('RESEND_API_KEY', '').strip()
     
     if resend_api_key:
-        import urllib.request
-        import json
-        
+        import requests as http_requests
+
         from_email = os.environ.get('RESEND_FROM_EMAIL', 'onboarding@resend.dev').strip()
-        url = "https://api.resend.com/emails"
-        headers = {
-            "Authorization": f"Bearer {resend_api_key}",
-            "Content-Type": "application/json",
-        }
-        data = {
-            "from": f"Multi-Branch Inventory <{from_email}>",
-            "to": [user.email],
-            "subject": subject,
-            "html": f"<p>Hi {user.first_name or user.username},</p><p>Your verification code is: <strong>{code}</strong></p><p>Please enter this code in the app to verify your account.</p>"
-        }
-        
-        req = urllib.request.Request(
-            url,
-            data=json.dumps(data).encode("utf-8"),
-            headers=headers,
-            method="POST"
+        resp = http_requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {resend_api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": f"Multi-Branch Inventory <{from_email}>",
+                "to": [user.email],
+                "subject": subject,
+                "html": f"<p>Hi {user.first_name or user.username},</p><p>Your verification code is: <strong>{code}</strong></p><p>Please enter this code in the app to verify your account.</p>"
+            },
+            timeout=10,
         )
-        with urllib.request.urlopen(req, timeout=10) as response:
-            print(f"[Resend Email Success] Code: {response.getcode()}, Body: {response.read().decode('utf-8')}")
+        resp.raise_for_status()
+        print(f"[Resend Email Success] Status: {resp.status_code}, Body: {resp.text}")
         return {"sent": True, "code": code}
 
     creds = _fresh_email_credentials()
@@ -141,11 +136,7 @@ def register(request):
     result = _safe_send_verification_email(user)
     payload = {'detail': 'Registration successful. Enter the code sent to your email.'}
     if not result.get("sent"):
-        payload["email_debug"] = {
-            "sent": False,
-            "code": result.get("code"),
-            "error": result.get("error"),
-        }
+        payload['detail'] = 'Registration successful. We could not send the verification email — please try "Resend Code" on the verify page.'
     return Response(payload, status=status.HTTP_201_CREATED)
 
 
@@ -241,11 +232,7 @@ def resend_verification(request):
     result = _safe_send_verification_email(user)
     payload = {'detail': 'If an account exists for this email, a verification message was sent.'}
     if not result.get("sent"):
-        payload["email_debug"] = {
-            "sent": False,
-            "code": result.get("code"),
-            "error": result.get("error"),
-        }
+        payload['detail'] = 'We could not send the verification email. Please try again later.'
     return Response(payload)
 
 

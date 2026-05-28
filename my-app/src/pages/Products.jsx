@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, buildProductFormData } from '../api';
+import { api, buildProductFormData, getImageUrl } from '../api';
 import { useCanWrite, useIsAdmin } from '../context/AuthContext';
 
 export default function Products() {
@@ -230,10 +230,10 @@ export default function Products() {
                 <td className="py-3 px-4">
                   {p.image_url ? (
                     <img
-                      src={p.image_url}
+                      src={getImageUrl(p.image_url)}
                       alt=""
                       className="h-10 w-10 rounded object-cover border border-slate-200 dark:border-slate-700 cursor-zoom-in hover:opacity-80 transition-opacity"
-                      onClick={() => setZoomedImage(p.image_url)}
+                      onClick={() => setZoomedImage(getImageUrl(p.image_url))}
                     />
                   ) : (
                     <span className="text-slate-400 text-xs">—</span>

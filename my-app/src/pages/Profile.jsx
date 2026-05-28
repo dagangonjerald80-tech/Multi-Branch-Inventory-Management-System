@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../api';
+import { api, getImageUrl } from '../api';
 
 export default function Profile() {
   const { user, refreshProfile } = useAuth();
@@ -134,10 +134,10 @@ export default function Profile() {
             <div className="h-48 bg-slate-200 dark:bg-slate-900 relative group overflow-hidden">
               {(coverPreview || user.cover_photo_url) ? (
                 <img 
-                  src={coverPreview || user.cover_photo_url} 
+                  src={coverPreview || getImageUrl(user.cover_photo_url)} 
                   alt="Cover" 
                   className="w-full h-full object-cover cursor-zoom-in group-hover:scale-105 transition-transform duration-500"
-                  onClick={() => setZoomedImage(coverPreview || user.cover_photo_url)}
+                  onClick={() => setZoomedImage(coverPreview || getImageUrl(user.cover_photo_url))}
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-r from-indigo-600 to-blue-500"></div>
@@ -162,10 +162,10 @@ export default function Profile() {
                 <div className="relative group">
                   {(avatarPreview || user.avatar_url) ? (
                     <img 
-                      src={avatarPreview || user.avatar_url} 
+                      src={avatarPreview || getImageUrl(user.avatar_url)} 
                       alt="" 
                       className="h-32 w-32 rounded-[2rem] object-cover border-4 border-white dark:border-slate-800 shadow-xl cursor-zoom-in hover:scale-105 transition-transform" 
-                      onClick={() => setZoomedImage(avatarPreview || user.avatar_url)}
+                      onClick={() => setZoomedImage(avatarPreview || getImageUrl(user.avatar_url))}
                     />
                   ) : (
                     <div className="h-32 w-32 rounded-[2rem] bg-slate-100 dark:bg-slate-900 border-4 border-white dark:border-slate-800 shadow-xl flex items-center justify-center text-4xl font-black text-slate-400">

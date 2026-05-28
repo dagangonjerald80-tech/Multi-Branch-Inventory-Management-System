@@ -4,6 +4,38 @@ if (apiUrl && !apiUrl.startsWith('http')) {
 }
 const API_BASE = (apiUrl || 'http://localhost:8000/api').replace(/\/$/, '');
 
+export function getImageUrl(path) {
+  if (!path) return null;
+  
+  let apiOrigin = 'http://localhost:8000';
+  try {
+    apiOrigin = new URL(API_BASE).origin;
+  } catch (e) {
+    if (window.location.origin) {
+      apiOrigin = window.location.origin;
+    }
+  }
+
+  if (!path.startsWith('http://') && !path.startsWith('https://')) {
+    return `${apiOrigin}${path.startsWith('/') ? '' : '/'}${path}`;
+  }
+
+  try {
+    const imgUrl = new URL(path);
+    const isApiLocal = apiOrigin.includes('localhost') || apiOrigin.includes('127.0.0.1');
+    const isImgLocal = imgUrl.host.includes('localhost') || imgUrl.host.includes('127.0.0.1');
+    if (!isApiLocal && isImgLocal) {
+      return `${apiOrigin}${imgUrl.pathname}`;
+    }
+    if (window.location.protocol === 'https:' && imgUrl.protocol === 'http:') {
+      return path.replace(/^http:\/\//i, 'https://');
+    }
+  } catch (e) {
+    // Fall back to original path if URL parsing fails
+  }
+  return path;
+}
+
 const ACCESS_KEY = 'inventory_access_token';
 const REFRESH_KEY = 'inventory_refresh_token';
 

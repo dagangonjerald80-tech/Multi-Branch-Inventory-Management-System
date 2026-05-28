@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { api } from '../api';
+import { api, getImageUrl } from '../api';
 import { useAuth, useIsAdmin } from '../context/AuthContext';
 
 export default function UserDetail() {
@@ -68,7 +68,7 @@ export default function UserDetail() {
       <div className="max-w-lg rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow">
         <div className="flex items-center gap-4 mb-6">
           {user.avatar_url ? (
-            <img src={user.avatar_url} alt="" className="h-16 w-16 rounded-full object-cover border" />
+            <img src={getImageUrl(user.avatar_url)} alt="" className="h-16 w-16 rounded-full object-cover border" />
           ) : (
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 text-lg font-semibold text-slate-600 dark:text-slate-400">
               {(user.first_name?.[0] || user.username?.[0] || '?').toUpperCase()}
